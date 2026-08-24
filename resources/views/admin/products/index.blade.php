@@ -2,13 +2,11 @@
 
 @section('content')
 
-
 @include('admin.components.alert')
 
 <!-- Content Header -->
 <section class="content-header">
     <div class="container-fluid">
-
         <div class="row mb-2">
 
             <div class="col-sm-6">
@@ -16,7 +14,6 @@
             </div>
 
             <div class="col-sm-6">
-
                 <ol class="breadcrumb float-sm-right">
 
                     <li class="breadcrumb-item">
@@ -30,18 +27,15 @@
                     </li>
 
                 </ol>
-
             </div>
 
         </div>
-
     </div>
 </section>
 
 
 <!-- Main Content -->
 <section class="content">
-
     <div class="container-fluid">
 
         <div class="card">
@@ -52,11 +46,9 @@
                 <div class="row align-items-center">
 
                     <div class="col-md-6">
-
                         <h3 class="card-title">
                             Product List
                         </h3>
-
                     </div>
 
                     <div class="col-md-6 text-right">
@@ -112,7 +104,7 @@
 
                                     <option
                                         value="{{ $category->id }}"
-                                        @selected(request('category_id') == $category->id)
+                                        @selected((string) request('category_id') === (string) $category->id)
                                     >
                                         {{ $category->name }}
                                     </option>
@@ -262,7 +254,7 @@
 
                                     <!-- Serial -->
                                     <td>
-                                        {{ $loop->iteration }}
+                                        {{ $products->firstItem() + $loop->index }}
                                     </td>
 
 
@@ -343,13 +335,13 @@
                                         @if($product->sale_price !== null)
 
                                             <del class="text-muted">
-                                                ${{ number_format($product->regular_price, 2) }}
+                                                ৳{{ number_format($product->regular_price, 2) }}
                                             </del>
 
                                             <br>
 
                                             <strong class="text-success">
-                                                ${{ number_format($product->sale_price, 2) }}
+                                                ৳{{ number_format($product->sale_price, 2) }}
                                             </strong>
 
                                             @if($product->discount > 0)
@@ -365,7 +357,7 @@
                                         @else
 
                                             <strong>
-                                                ${{ number_format($product->regular_price, 2) }}
+                                                ৳{{ number_format($product->regular_price, 2) }}
                                             </strong>
 
                                         @endif
@@ -442,9 +434,7 @@
 
                                     <!-- Created At -->
                                     <td>
-
                                         {{ $product->created_at?->format('d M Y') }}
-
                                     </td>
 
 
@@ -454,7 +444,7 @@
                                         <!-- Edit -->
                                         <a
                                             href="{{ route('admin.products.edit', $product->id) }}"
-                                            class="btn btn-warning btn-sm"
+                                            class="btn btn-warning btn-sm mr-2"
                                             title="Edit"
                                         >
 
@@ -521,11 +511,42 @@
 
 
             <!-- Pagination -->
-            @if(method_exists($products, 'hasPages') && $products->hasPages())
+            @if($products->hasPages())
 
                 <div class="card-footer">
 
-                    {{ $products->links() }}
+                    <div class="row align-items-center">
+
+                        <!-- Pagination Information -->
+                        <div class="col-md-6">
+
+                            <div class="text-muted">
+
+                                Showing
+                                <strong>{{ $products->firstItem() }}</strong>
+                                to
+                                <strong>{{ $products->lastItem() }}</strong>
+                                of
+                                <strong>{{ $products->total() }}</strong>
+                                products
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Pagination Links -->
+                        <div class="col-md-6">
+
+                            <div class="float-right">
+
+                                {{ $products->onEachSide(1)->links('pagination::bootstrap-4') }}
+
+                            </div>
+
+                        </div>
+
+                    </div>
 
                 </div>
 
@@ -534,11 +555,10 @@
         </div>
 
     </div>
-
 </section>
 
-
 @endsection
+
 
 @push('js')
 

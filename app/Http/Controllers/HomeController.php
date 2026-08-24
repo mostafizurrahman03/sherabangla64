@@ -16,35 +16,35 @@ class HomeController extends Controller
         // return view('home.index', compact('categories', 'flashSale', 'bestSellers', 'newArrivals'));
 
 
-    // Active categories
-    $categories = Category::where('is_active', true)
-        ->orderBy('sort_order')
-        ->get();
+        // Active categories
+        $categories = Category::where('is_active', true)
+            ->orderBy('sort_order')
+            ->get();
 
-    // Flash Sale Products
-    $flashSale = Product::onSale()
-        ->latest()
-        ->take(10)
-        ->get();
+        // Flash Sale Products
+        $flashSale = Product::onSale()
+            ->latest()
+            ->take(10)
+            ->get();
 
-    // Featured / Best Sellers
-    $bestSellers = Product::featured()
-        ->orderBy('sort_order')
-        ->take(10)
-        ->get();
+        // Featured / Best Sellers
+        $bestSellers = Product::featured()
+            ->orderBy('sort_order')
+            ->take(10)
+            ->get();
 
-    // New Arrivals
-    $newArrivals = Product::published()
-        ->latest()
-        ->take(10)
-        ->get();
+        // New Arrivals
+        $newArrivals = Product::published()
+            ->latest()
+            ->take(10)
+            ->get();
 
-    return view('home.index', compact(
-        'categories',
-        'flashSale',
-        'bestSellers',
-        'newArrivals'
-    ));
+        return view('home.index', compact(
+            'categories',
+            'flashSale',
+            'bestSellers',
+            'newArrivals'
+        ));
 
 
 

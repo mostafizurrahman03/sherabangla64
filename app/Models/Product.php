@@ -30,6 +30,8 @@ class Product extends Model
         'low_stock_threshold',
         'status',
         'is_featured',
+        'is_flash',
+        'is_best',
         'sort_order',
         'meta_title',
         'meta_description',

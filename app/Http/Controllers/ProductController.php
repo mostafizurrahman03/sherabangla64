@@ -9,10 +9,10 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::active()->with('category');
+        $query = Product::with('category');
 
         if ($request->filled('category')) {
-            $query->whereHas('category', fn ($q) => $q->where('slug', $request->category));
+            $query->whereHas('category', fn($q) => $q->where('slug', $request->category));
         }
 
         if ($request->filled('q')) {
@@ -26,9 +26,9 @@ class ProductController extends Controller
             $query->where('price', '<=', $request->max_price);
         }
 
-        $query->when($request->sort === 'low_high', fn ($q) => $q->orderBy('price'))
-              ->when($request->sort === 'high_low', fn ($q) => $q->orderByDesc('price'))
-              ->when(! $request->sort, fn ($q) => $q->orderByDesc('is_featured'));
+        $query->when($request->sort === 'low_high', fn($q) => $q->orderBy('price'))
+            ->when($request->sort === 'high_low', fn($q) => $q->orderByDesc('price'))
+            ->when(!$request->sort, fn($q) => $q->orderByDesc('is_featured'));
 
         $products = $query->paginate(20)->withQueryString();
         $categories = Category::where('is_active', true)->orderBy('sort_order')->get();
@@ -38,10 +38,9 @@ class ProductController extends Controller
 
     public function show(string $slug)
     {
-        $product = Product::active()->with(['category', 'images'])->where('slug', $slug)->firstOrFail();
+        $product = Product::with(['category', 'images'])->where('slug', $slug)->firstOrFail();
 
-        $related = Product::active()
-            ->where('category_id', $product->category_id)
+        $related = Product::where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
             ->take(6)
             ->get();

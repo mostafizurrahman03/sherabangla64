@@ -27,7 +27,6 @@ Route::middleware([
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
 
     Route::resource('skill', SkillController::class);
-    
 
 
 });

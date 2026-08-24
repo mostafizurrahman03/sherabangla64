@@ -33,14 +33,18 @@ class ProductController extends Controller
         */
 
         if ($request->filled('search')) {
-            $search = $request->search;
+
+            $search = trim($request->search);
 
             $query->where(function ($q) use ($search) {
+
                 $q->where('name', 'like', "%{$search}%")
                     ->orWhere('sku', 'like', "%{$search}%")
                     ->orWhere('slug', 'like', "%{$search}%");
+
             });
         }
+
 
         /*
         |--------------------------------------------------------------------------
@@ -49,8 +53,13 @@ class ProductController extends Controller
         */
 
         if ($request->filled('status')) {
-            $query->where('status', $request->status);
+
+            $query->where(
+                'status',
+                $request->status
+            );
         }
+
 
         /*
         |--------------------------------------------------------------------------
@@ -59,27 +68,69 @@ class ProductController extends Controller
         */
 
         if ($request->filled('category_id')) {
-            $query->where('category_id', $request->category_id);
+
+            $query->where(
+                'category_id',
+                $request->category_id
+            );
         }
+
 
         /*
         |--------------------------------------------------------------------------
-        | Ordering
+        | Per Page
+        |--------------------------------------------------------------------------
+        |
+        | Available:
+        | 10, 25, 50, 100
+        |
+        */
+
+        $allowedPerPage = [10, 25, 50, 100];
+
+        $perPage = (int) $request->get('per_page', 10);
+
+        if (!in_array($perPage, $allowedPerPage)) {
+            $perPage = 10;
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Ordering + Pagination
         |--------------------------------------------------------------------------
         */
 
         $products = $query
-            ->orderBy('sort_order')
+            ->orderBy('sort_order', 'asc')
             ->latest()
-            ->paginate(10)
+            ->paginate($perPage)
             ->withQueryString();
 
-        $categories = Category::orderBy('name')->get();
 
-        return view('admin.products.index', compact(
-            'products',
-            'categories'
-        ));
+        /*
+        |--------------------------------------------------------------------------
+        | Categories
+        |--------------------------------------------------------------------------
+        */
+
+        $categories = Category::orderBy('name', 'asc')->get();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Return View
+        |--------------------------------------------------------------------------
+        */
+
+        return view(
+            'admin.products.index',
+            compact(
+                'products',
+                'categories',
+                'perPage'
+            )
+        );
     }
 
 
@@ -94,11 +145,14 @@ class ProductController extends Controller
 
         $brands = Brand::orderBy('name')->get();
 
-        return view('admin.products.create', compact(
-            'categories',
-            'subCategories',
-            'brands'
-        ));
+        return view(
+            'admin.products.create',
+            compact(
+                'categories',
+                'subCategories',
+                'brands'
+            )
+        );
     }
 
 
@@ -108,6 +162,7 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+
             'name' => [
                 'required',
                 'string',
@@ -201,6 +256,16 @@ class ProductController extends Controller
                 'boolean',
             ],
 
+            'is_flash' => [
+                'nullable',
+                'boolean',
+            ],
+
+            'is_best' => [
+                'nullable',
+                'boolean',
+            ],
+
             'sort_order' => [
                 'nullable',
                 'integer',
@@ -222,6 +287,7 @@ class ProductController extends Controller
                 'nullable',
                 'date',
             ],
+
         ]);
 
 
@@ -231,7 +297,9 @@ class ProductController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $slug = $validated['slug'] ?? Str::slug($validated['name']);
+        $slug = $validated['slug']
+            ?? Str::slug($validated['name']);
+
 
         /*
         |--------------------------------------------------------------------------
@@ -243,7 +311,9 @@ class ProductController extends Controller
         $counter = 1;
 
         while (Product::where('slug', $slug)->exists()) {
+
             $slug = $originalSlug . '-' . $counter;
+
             $counter++;
         }
 
@@ -257,7 +327,9 @@ class ProductController extends Controller
         $imagePath = null;
 
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')
+
+            $imagePath = $request
+                ->file('image')
                 ->store('products', 'public');
         }
 
@@ -274,6 +346,7 @@ class ProductController extends Controller
             $validated['status'] === 'published'
             && !$publishedAt
         ) {
+
             $publishedAt = now();
         }
 
@@ -285,6 +358,7 @@ class ProductController extends Controller
         */
 
         Product::create([
+
             'user_id' => Auth::id(),
 
             'name' => $validated['name'],
@@ -319,6 +393,10 @@ class ProductController extends Controller
 
             'is_featured' => $request->boolean('is_featured'),
 
+            'is_flash' => $request->boolean('is_flash'),
+
+            'is_best' => $request->boolean('is_best'),
+
             'sort_order' => $validated['sort_order'] ?? 0,
 
             'meta_title' => $validated['meta_title'] ?? null,
@@ -326,12 +404,16 @@ class ProductController extends Controller
             'meta_description' => $validated['meta_description'] ?? null,
 
             'published_at' => $publishedAt,
+
         ]);
 
 
         return redirect()
             ->route('admin.products.index')
-            ->with('success', 'Product created successfully.');
+            ->with(
+                'success',
+                'Product created successfully.'
+            );
     }
 
 
@@ -347,7 +429,10 @@ class ProductController extends Controller
             'user',
         ])->findOrFail($id);
 
-        return view('admin.products.show', compact('product'));
+        return view(
+            'admin.products.show',
+            compact('product')
+        );
     }
 
 
@@ -364,12 +449,15 @@ class ProductController extends Controller
 
         $brands = Brand::orderBy('name')->get();
 
-        return view('admin.products.edit', compact(
-            'product',
-            'categories',
-            'subCategories',
-            'brands'
-        ));
+        return view(
+            'admin.products.edit',
+            compact(
+                'product',
+                'categories',
+                'subCategories',
+                'brands'
+            )
+        );
     }
 
 
@@ -382,6 +470,7 @@ class ProductController extends Controller
 
 
         $validated = $request->validate([
+
             'name' => [
                 'required',
                 'string',
@@ -475,6 +564,16 @@ class ProductController extends Controller
                 'boolean',
             ],
 
+            'is_flash' => [
+                'nullable',
+                'boolean',
+            ],
+
+            'is_best' => [
+                'nullable',
+                'boolean',
+            ],
+
             'sort_order' => [
                 'nullable',
                 'integer',
@@ -496,6 +595,7 @@ class ProductController extends Controller
                 'nullable',
                 'date',
             ],
+
         ]);
 
 
@@ -505,9 +605,11 @@ class ProductController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $slug = $validated['slug'] ?? Str::slug($validated['name']);
+        $slug = $validated['slug']
+            ?? Str::slug($validated['name']);
 
         $originalSlug = $slug;
+
         $counter = 1;
 
         while (
@@ -515,7 +617,9 @@ class ProductController extends Controller
                 ->where('id', '!=', $product->id)
                 ->exists()
         ) {
+
             $slug = $originalSlug . '-' . $counter;
+
             $counter++;
         }
 
@@ -531,10 +635,13 @@ class ProductController extends Controller
         if ($request->hasFile('image')) {
 
             if ($product->image) {
-                Storage::disk('public')->delete($product->image);
+
+                Storage::disk('public')
+                    ->delete($product->image);
             }
 
-            $imagePath = $request->file('image')
+            $imagePath = $request
+                ->file('image')
                 ->store('products', 'public');
         }
 
@@ -551,7 +658,10 @@ class ProductController extends Controller
             $validated['status'] === 'published'
             && !$publishedAt
         ) {
-            $publishedAt = $product->published_at ?? now();
+
+            $publishedAt =
+                $product->published_at
+                ?? now();
         }
 
 
@@ -562,6 +672,7 @@ class ProductController extends Controller
         */
 
         $product->update([
+
             'name' => $validated['name'],
 
             'slug' => $slug,
@@ -580,33 +691,51 @@ class ProductController extends Controller
 
             'category_id' => $validated['category_id'],
 
-            'sub_category_id' => $validated['sub_category_id'] ?? null,
+            'sub_category_id' =>
+                $validated['sub_category_id'] ?? null,
 
-            'brand_id' => $validated['brand_id'] ?? null,
+            'brand_id' =>
+                $validated['brand_id'] ?? null,
 
             'image' => $imagePath,
 
-            'stock_quantity' => $validated['stock_quantity'] ?? 0,
+            'stock_quantity' =>
+                $validated['stock_quantity'] ?? 0,
 
-            'low_stock_threshold' => $validated['low_stock_threshold'] ?? 5,
+            'low_stock_threshold' =>
+                $validated['low_stock_threshold'] ?? 5,
 
             'status' => $validated['status'],
 
-            'is_featured' => $request->boolean('is_featured'),
+            'is_featured' =>
+                $request->boolean('is_featured'),
 
-            'sort_order' => $validated['sort_order'] ?? 0,
+            'is_flash' =>
+                $request->boolean('is_flash'),
 
-            'meta_title' => $validated['meta_title'] ?? null,
+            'is_best' =>
+                $request->boolean('is_best'),
 
-            'meta_description' => $validated['meta_description'] ?? null,
+            'sort_order' =>
+                $validated['sort_order'] ?? 0,
+
+            'meta_title' =>
+                $validated['meta_title'] ?? null,
+
+            'meta_description' =>
+                $validated['meta_description'] ?? null,
 
             'published_at' => $publishedAt,
+
         ]);
 
 
         return redirect()
             ->route('admin.products.index')
-            ->with('success', 'Product updated successfully.');
+            ->with(
+                'success',
+                'Product updated successfully.'
+            );
     }
 
 
@@ -625,7 +754,9 @@ class ProductController extends Controller
         */
 
         if ($product->image) {
-            Storage::disk('public')->delete($product->image);
+
+            Storage::disk('public')
+                ->delete($product->image);
         }
 
 
@@ -640,6 +771,9 @@ class ProductController extends Controller
 
         return redirect()
             ->route('admin.products.index')
-            ->with('success', 'Product deleted successfully.');
+            ->with(
+                'success',
+                'Product deleted successfully.'
+            );
     }
 }

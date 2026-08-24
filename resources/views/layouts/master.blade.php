@@ -17,7 +17,6 @@
   <link rel="stylesheet"
     href=" {{ asset('admin') }}/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
   <!-- iCheck -->
-
   <link rel="stylesheet" href=" {{ asset('admin') }}/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
   <!-- JQVMap -->
   <link rel="stylesheet" href=" {{ asset('admin') }}/plugins/jqvmap/jqvmap.min.css">
@@ -31,7 +30,6 @@
   <link rel="stylesheet" href=" {{ asset('admin') }}/plugins/summernote/summernote-bs4.min.css">
   <!-- SweetAlert2 -->
   <link rel="stylesheet" href=" {{ asset('admin') }}/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
-
   <link rel="stylesheet" href="{{ asset('admin') }}/plugins/toastr/toastr.min.css">
   <!-- DataTables -->
   <link rel="stylesheet" href=" {{ asset('admin') }}/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
@@ -40,8 +38,104 @@
   <!-- Select2 -->
   <link rel="stylesheet" href="{{ asset('admin') }}/plugins/select2/css/select2.min.css">
 
+   <!-- Dynamic Favicon -->
+    <link rel="icon" href="{{ $favicon }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ $favicon }}" type="image/x-icon">
+    
+    <!-- For better compatibility -->
+    <link rel="apple-touch-icon" href="{{ $favicon }}">
+    <link rel="apple-touch-icon-precomposed" href="{{ $favicon }}">
+
   @stack('css')
 
+  <!-- Custom Modern Touch for AdminLTE Sidebar -->
+  <style>
+    .sidebar-dark-navy {
+      background-color: #0f172a !important; /* Slate / Dark Blue */
+    }
+
+    .sidebar-dark-navy .nav-sidebar > .nav-item > .nav-link.active {
+      background-color: #2563eb !important; /* Modern Royal Blue */
+      color: #ffffff !important;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+      border-radius: 6px;
+    }
+
+    .sidebar-dark-navy .nav-sidebar .nav-link {
+      border-radius: 6px;
+      margin-bottom: 2px;
+      transition: all 0.2s ease;
+    }
+
+    .sidebar-dark-navy .nav-sidebar .nav-link:hover {
+      background-color: rgba(255, 255, 255, 0.08) !important;
+    }
+  </style>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const body = document.body;
+      const mainNavbar = document.querySelector('.main-header');
+      const mainSidebar = document.querySelector('#mainSidebar');
+      const darkModeToggle = document.getElementById('darkModeToggle');
+
+      // LocalStorage থেকে পূর্বের মোড চেক করা
+      const currentTheme = localStorage.getItem('theme');
+
+      if (currentTheme === 'dark') {
+        enableDarkMode();
+      } else {
+        enableLightMode();
+      }
+
+      if (darkModeToggle) {
+        darkModeToggle.addEventListener('click', function (e) {
+          e.preventDefault();
+          if (body.classList.contains('dark-mode')) {
+            enableLightMode();
+            localStorage.setItem('theme', 'light');
+          } else {
+            enableDarkMode();
+            localStorage.setItem('theme', 'dark');
+          }
+        });
+      }
+
+      function enableDarkMode() {
+        body.classList.add('dark-mode');
+        if (mainNavbar) {
+          mainNavbar.classList.remove('navbar-white', 'navbar-light');
+          mainNavbar.classList.add('navbar-dark', 'navbar-black');
+        }
+        if (mainSidebar) {
+          mainSidebar.classList.remove('sidebar-light-navy');
+          mainSidebar.classList.add('sidebar-dark-navy');
+        }
+        const icon = darkModeToggle ? darkModeToggle.querySelector('i') : null;
+        if (icon) {
+          icon.classList.remove('fa-moon');
+          icon.classList.add('fa-sun');
+        }
+      }
+
+      function enableLightMode() {
+        body.classList.remove('dark-mode');
+        if (mainNavbar) {
+          mainNavbar.classList.remove('navbar-dark', 'navbar-black');
+          mainNavbar.classList.add('navbar-white', 'navbar-light');
+        }
+        if (mainSidebar) {
+          mainSidebar.classList.remove('sidebar-dark-navy');
+          mainSidebar.classList.add('sidebar-light-navy');
+        }
+        const icon = darkModeToggle ? darkModeToggle.querySelector('i') : null;
+        if (icon) {
+          icon.classList.remove('fa-sun');
+          icon.classList.add('fa-moon');
+        }
+      }
+    });
+  </script>
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -144,6 +238,7 @@
             <a href="#" class="dropdown-item dropdown-footer">See All Messages</a>
           </div>
         </li>
+
         <!-- Notifications Dropdown Menu -->
         <li class="nav-item dropdown">
           <a class="nav-link" data-toggle="dropdown" href="#">
@@ -171,11 +266,21 @@
             <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
           </div>
         </li>
+
+        <!-- Dark Mode Toggle Toggle Button -->
+        <li class="nav-item">
+          <a class="nav-link" id="darkModeToggle" href="#" role="button">
+            <i class="fas fa-moon"></i>
+          </a>
+        </li>
+
+        <!-- Fullscreen -->
         <li class="nav-item">
           <a class="nav-link" data-widget="fullscreen" href="#" role="button">
             <i class="fas fa-expand-arrows-alt"></i>
           </a>
         </li>
+
         <!-- Profile & Logout -->
         <li class="nav-item dropdown">
           <a class="nav-link" data-toggle="dropdown" href="#" aria-expanded="false">
@@ -184,7 +289,7 @@
 
           <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
 
-            <!-- User Info (optional) -->
+            <!-- User Info -->
             <div class="dropdown-item">
               <div class="media">
                 <img src="{{ asset('admin/dist/img/user1-128x128.jpg') }}" alt="User Avatar"
@@ -233,9 +338,11 @@
 
     <!-- /.content-wrapper -->
     <footer class="main-footer">
-      <strong>Copyright &copy; 2025 <a href="https://techgiantpro.com/" target="_blank">TechGiantPro-TGP</a>.</strong>
-      All rights reserved.
-
+      <strong>
+          Copyright &copy; <?php echo date('Y'); ?> 
+          <a href="https://techgiantpro.com/" target="_blank">{{ $appName }}</a>
+      </strong>
+      {{ $copyrightText }}
     </footer>
 
     <!-- Control Sidebar -->
@@ -275,8 +382,6 @@
   <script src=" {{ asset('admin') }}/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
   <!-- AdminLTE App -->
   <script src=" {{ asset('admin') }}/dist/js/adminlte.js"></script>
-  <!-- AdminLTE for demo purposes -->
-  {{-- <script src=" {{ asset('admin') }}/dist/js/demo.js"></script> --}}
   <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
   <script src=" {{ asset('admin') }}/dist/js/pages/dashboard.js"></script>
   <!-- SweetAlert2 -->
