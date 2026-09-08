@@ -14,34 +14,34 @@ return new class extends Migration
         Schema::create('sliders', function (Blueprint $table) {
             $table->id();
 
-            // User/Admin who created the slider
             $table->foreignId('user_id')
-                ->constrained()
-                ->cascadeOnDelete();
+                ->nullable()
+                ->constrained(users)
+                ->nullOnDelete();
 
-            // Slider content
-            $table->string('title')->nullable();
-            $table->string('subtitle')->nullable();
-            $table->text('description')->nullable();
+            // main_slider | side_top | side_bottom
+            $table->string('position')
+                ->default('main_slider')
+                ->index();
 
-            // Slider image
+            // Banner image
             $table->string('image');
 
-            // Button
-            $table->string('button_text')->nullable();
-            $table->string('button_url')->nullable();
+            // Product page URL
+            $table->string('link_url')->nullable();
 
             // Display order
             $table->unsignedInteger('sort_order')->default(0);
 
             // Active / inactive
-            $table->boolean('is_active')->default(true);
+            $table->boolean('is_active')->default(true)->index();
 
             // Optional scheduling
             $table->timestamp('start_at')->nullable();
             $table->timestamp('end_at')->nullable();
 
             $table->timestamps();
+            
         });
     }
 

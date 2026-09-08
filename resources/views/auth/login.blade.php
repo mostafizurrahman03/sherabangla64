@@ -428,7 +428,7 @@
                         </div>
                         <input type="email" id="email" name="email"
                             class="form-control @error('email') is-invalid @enderror" placeholder="Email Address"
-                            value="{{ old('email') }}" required autofocus autocomplete="username">
+                            value="{{ old('email','admin@example.com') }}" required autofocus autocomplete="username">
                     </div>
                     @error('email')
                         <div class="invalid-feedback">{{ $message }}</div>
@@ -443,7 +443,7 @@
                         </div>
                         <input type="password" id="password" name="password"
                             class="form-control @error('password') is-invalid @enderror" placeholder="Password" required
-                            autocomplete="current-password">
+                            value="password" autocomplete="current-password">
                         <div class="input-group-append" style="cursor: pointer;" onclick="togglePassword()">
                             <span class="input-group-text">
                                 <i class="fas fa-eye" id="togglePasswordIcon"></i>

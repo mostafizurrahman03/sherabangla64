@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Slider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\ValidationException;
 
 class SliderController extends Controller
 {
@@ -17,28 +16,34 @@ class SliderController extends Controller
     {
         $query = Slider::with('user');
 
-        // Search
-        if ($request->filled('search')) {
-            $search = $request->search;
-
-            $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
-                    ->orWhere('subtitle', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%");
-            });
+        /*
+        |--------------------------------------------------------------------------
+        | Position Filter
+        |--------------------------------------------------------------------------
+        */
+        if ($request->filled('position')) {
+            $query->where('position', $request->position);
         }
 
-        // Status filter
-        if ($request->filled('status')) {
+        /*
+        |--------------------------------------------------------------------------
+        | Status Filter
+        |--------------------------------------------------------------------------
+        */
+        if ($request->has('status') && $request->status !== '') {
             $query->where('is_active', $request->status);
         }
 
-        // Sort
+        /*
+        |--------------------------------------------------------------------------
+        | Sorting
+        |--------------------------------------------------------------------------
+        */
         $sortBy = $request->get('sort_by', 'sort_order');
         $sortOrder = $request->get('sort_order', 'asc');
 
         $allowedSorts = [
-            'title',
+            'position',
             'sort_order',
             'created_at',
             'start_at',
@@ -53,6 +58,15 @@ class SliderController extends Controller
             $sortOrder = 'asc';
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | Pagination
+        |--------------------------------------------------------------------------
+        | 10 sliders per page
+        | withQueryString() keeps filter/search parameters
+        | when moving between pagination pages.
+        |--------------------------------------------------------------------------
+        */
         $sliders = $query
             ->orderBy($sortBy, $sortOrder)
             ->paginate(10)
@@ -75,21 +89,10 @@ class SliderController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title' => [
-                'nullable',
+            'position' => [
+                'required',
                 'string',
-                'max:255',
-            ],
-
-            'subtitle' => [
-                'nullable',
-                'string',
-                'max:255',
-            ],
-
-            'description' => [
-                'nullable',
-                'string',
+                'in:main_slider,side_top,side_bottom',
             ],
 
             'image' => [
@@ -99,15 +102,9 @@ class SliderController extends Controller
                 'max:2048',
             ],
 
-            'button_text' => [
+            'link_url' => [
                 'nullable',
-                'string',
-                'max:255',
-            ],
-
-            'button_url' => [
-                'nullable',
-                'string',
+                'url',
                 'max:255',
             ],
 
@@ -134,20 +131,25 @@ class SliderController extends Controller
             ],
         ]);
 
-        // Upload image
-        $imagePath = $request->file('image')->store(
-            'sliders',
-            'public'
-        );
+        /*
+        |--------------------------------------------------------------------------
+        | Upload Image
+        |--------------------------------------------------------------------------
+        */
+        $imagePath = $request
+            ->file('image')
+            ->store('sliders', 'public');
 
+        /*
+        |--------------------------------------------------------------------------
+        | Create Slider
+        |--------------------------------------------------------------------------
+        */
         Slider::create([
             'user_id' => auth()->id(),
-            'title' => $validated['title'] ?? null,
-            'subtitle' => $validated['subtitle'] ?? null,
-            'description' => $validated['description'] ?? null,
+            'position' => $validated['position'],
             'image' => $imagePath,
-            'button_text' => $validated['button_text'] ?? null,
-            'button_url' => $validated['button_url'] ?? null,
+            'link_url' => $validated['link_url'] ?? null,
             'sort_order' => $validated['sort_order'] ?? 0,
             'is_active' => $request->boolean('is_active'),
             'start_at' => $validated['start_at'] ?? null,
@@ -162,9 +164,9 @@ class SliderController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Slider $slider)
     {
-        $slider = Slider::with('user')->findOrFail($id);
+        $slider->load('user');
 
         return view('admin.sliders.show', compact('slider'));
     }
@@ -172,36 +174,21 @@ class SliderController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Slider $slider)
     {
-        $slider = Slider::findOrFail($id);
-
         return view('admin.sliders.edit', compact('slider'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Slider $slider)
     {
-        $slider = Slider::findOrFail($id);
-
         $validated = $request->validate([
-            'title' => [
-                'nullable',
+            'position' => [
+                'required',
                 'string',
-                'max:255',
-            ],
-
-            'subtitle' => [
-                'nullable',
-                'string',
-                'max:255',
-            ],
-
-            'description' => [
-                'nullable',
-                'string',
+                'in:main_slider,side_top,side_bottom',
             ],
 
             'image' => [
@@ -211,15 +198,9 @@ class SliderController extends Controller
                 'max:2048',
             ],
 
-            'button_text' => [
+            'link_url' => [
                 'nullable',
-                'string',
-                'max:255',
-            ],
-
-            'button_url' => [
-                'nullable',
-                'string',
+                'url',
                 'max:255',
             ],
 
@@ -246,12 +227,20 @@ class SliderController extends Controller
             ],
         ]);
 
+        /*
+        |--------------------------------------------------------------------------
+        | Existing Image
+        |--------------------------------------------------------------------------
+        */
         $imagePath = $slider->image;
 
-        // New image uploaded
+        /*
+        |--------------------------------------------------------------------------
+        | Update Image
+        |--------------------------------------------------------------------------
+        */
         if ($request->hasFile('image')) {
 
-            // Delete old image
             if (
                 $slider->image &&
                 Storage::disk('public')->exists($slider->image)
@@ -259,20 +248,20 @@ class SliderController extends Controller
                 Storage::disk('public')->delete($slider->image);
             }
 
-            // Store new image
-            $imagePath = $request->file('image')->store(
-                'sliders',
-                'public'
-            );
+            $imagePath = $request
+                ->file('image')
+                ->store('sliders', 'public');
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | Update Slider
+        |--------------------------------------------------------------------------
+        */
         $slider->update([
-            'title' => $validated['title'] ?? null,
-            'subtitle' => $validated['subtitle'] ?? null,
-            'description' => $validated['description'] ?? null,
+            'position' => $validated['position'],
             'image' => $imagePath,
-            'button_text' => $validated['button_text'] ?? null,
-            'button_url' => $validated['button_url'] ?? null,
+            'link_url' => $validated['link_url'] ?? null,
             'sort_order' => $validated['sort_order'] ?? 0,
             'is_active' => $request->boolean('is_active'),
             'start_at' => $validated['start_at'] ?? null,
@@ -287,11 +276,13 @@ class SliderController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Slider $slider)
     {
-        $slider = Slider::findOrFail($id);
-
-        // Delete image
+        /*
+        |--------------------------------------------------------------------------
+        | Delete Image
+        |--------------------------------------------------------------------------
+        */
         if (
             $slider->image &&
             Storage::disk('public')->exists($slider->image)
@@ -299,6 +290,11 @@ class SliderController extends Controller
             Storage::disk('public')->delete($slider->image);
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | Delete Slider
+        |--------------------------------------------------------------------------
+        */
         $slider->delete();
 
         return redirect()

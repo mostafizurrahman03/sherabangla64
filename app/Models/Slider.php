@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Builder;
 
 class Slider extends Model
 {
@@ -14,12 +16,10 @@ class Slider extends Model
      */
     protected $fillable = [
         'user_id',
-        'title',
-        'subtitle',
-        'description',
+        'position',
         'image',
-        'button_text',
-        'button_url',
+        'mobile_image',
+        'link_url',
         'sort_order',
         'is_active',
         'start_at',
@@ -32,43 +32,54 @@ class Slider extends Model
     protected function casts(): array
     {
         return [
-            'is_active' => 'boolean',
+            'user_id' => 'integer',
             'sort_order' => 'integer',
+            'is_active' => 'boolean',
             'start_at' => 'datetime',
             'end_at' => 'datetime',
         ];
     }
 
     /**
-     * Slider belongs to a user.
+     * Get the user who created the slider.
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
     /**
-     * Scope: Get active sliders.
+     * Scope: Filter sliders by position.
+     *
+     * Example:
+     * Slider::position('main_slider')->get();
      */
-    public function scopeActive($query)
+    public function scopePosition(Builder $query, string $position): Builder
     {
-        return $query->where('is_active', true);
+        return $query->where('position', $position);
     }
 
     /**
-     * Scope: Get currently scheduled sliders.
+     * Scope: Get active and currently valid sliders.
+     *
+     * It checks:
+     * - is_active = true
+     * - start_at is null OR already started
+     * - end_at is null OR not expired
+     * - sorted by sort_order
      */
-    public function scopeCurrentlyActive($query)
+    public function scopeActive(Builder $query): Builder
     {
         return $query
             ->where('is_active', true)
-            ->where(function ($query) {
+            ->where(function (Builder $query) {
                 $query->whereNull('start_at')
                     ->orWhere('start_at', '<=', now());
             })
-            ->where(function ($query) {
+            ->where(function (Builder $query) {
                 $query->whereNull('end_at')
                     ->orWhere('end_at', '>=', now());
-            });
+            })
+            ->orderBy('sort_order', 'asc');
     }
 }

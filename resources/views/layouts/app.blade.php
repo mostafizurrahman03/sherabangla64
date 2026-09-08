@@ -5,38 +5,40 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>@yield('title', 'Sera Bangla | Best of Bangla, Best Products')</title>
+  <!-- CSS -->
   <link rel="stylesheet" href="{{ asset('css/app.css') }}">
   <link rel="shortcut icon" href="{{ asset('images/logo31.png') }}" type="image/x-icon">
+
+  <!-- Meta Tags for AJAX -->
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <meta name="cart-update-url" content="{{ route('cart.update', ['item' => 'PLACEHOLDER']) }}">
+  <meta name="cart-remove-url" content="{{ route('cart.remove', ['item' => 'PLACEHOLDER']) }}">
+  <meta name="cart-add-url" content="{{ route('cart.add', ['product' => 'PLACEHOLDER']) }}">
+  <meta name="cart-items-url" content="{{ route('cart.items') }}">
+
   @stack('styles')
 </head>
 
 <body>
 
-  {{-- <div class="topbar">
-    <div class="container">
-      <div class="topbar-left">
-        <span>Delivery within Dhaka in 3 Days</span>
-        <span>Hotline: 16345</span>
-      </div>
-      <div class="topbar-left">
-        <span>About Us</span>
-        <span>Track Order</span>
-      </div>
-    </div>
-  </div> --}}
 
-
-
+  <!-- ===== HEADER ===== -->
   <header class="main">
     <div class="container">
       <div class="header-row">
+        <!-- Hamburger -->
         <button class="hamburger"
           onclick="document.getElementById('mobileMenu').classList.add('show');document.getElementById('mobileMenuOverlay').classList.add('show');"
-          aria-label="Menu"><span></span></button>
+          aria-label="Menu">
+          <span></span>
+        </button>
+
+        <!-- Logo -->
         <a href="{{ route('home') }}" class="brand">
           <img src="{{ asset('images/logo31.png') }}" width="150" alt="Sera Bangla Logo">
-
         </a>
+
+        <!-- Search -->
         <form action="{{ route('shop.index') }}" method="GET" class="search-wrap">
           <input type="text" name="q" value="{{ request('q') }}"
             placeholder="Search products — e.g. rice, oil, eggs...">
@@ -48,26 +50,45 @@
             </svg>
           </button>
         </form>
+
+        <!-- Track Order Button -->
+        <a class="track-btn desktop-track-btn" href="{{ route('orders.track') }}"
+          style="display: flex; align-items: center; gap: 6px; padding: 8px 14px; background: #f8f9fa; border: 1px solid #eee; border-radius: 50px; text-decoration: none; color: #333; font-size: 14px; font-weight: 500;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <rect x="1" y="3" width="15" height="13"></rect>
+            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+            <circle cx="5.5" cy="18.5" r="2.5"></circle>
+            <circle cx="18.5" cy="18.5" r="2.5"></circle>
+          </svg>
+          <span>Track Order</span>
+        </a>
+
+        <style>
+          @media (max-width: 768px) {
+            .desktop-track-btn {
+              display: none !important;
+            }
+          }
+        </style>
+
+        <!-- Header Actions -->
         <div class="header-actions">
-          {{-- <a class="header-action" href="{{ auth()->check() ? route('orders.mine') : route('login') }}">
-            <svg class="icon-circle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <circle cx="12" cy="8" r="4"></circle>
-              <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
-            </svg>
-            <div><span>Your</span><strong>Account</strong></div>
-          </a> --}}
-          <a class="cart-btn" href="{{ route('cart.index') }}">
+          <a class="cart-btn" href="javascript:void(0)" onclick="toggleCart()">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
               <circle cx="9" cy="20" r="1"></circle>
               <circle cx="18" cy="20" r="1"></circle>
               <path d="M2.5 3h2l2.6 12.6a2 2 0 0 0 2 1.6h8.4a2 2 0 0 0 2-1.6L21 8H6"></path>
             </svg>
-            <span>Cart</span> <span class="cart-count">{{ $globalCartCount ?? 0 }}</span>
+            <span>Cart</span>
+            <span class="cart-count" id="headerCartCount">{{ $globalCartCount ?? 0 }}</span>
           </a>
         </div>
       </div>
     </div>
+
+    <!-- Category Navigation -->
     <nav class="catnav">
       <div class="container hscroll">
         <a href="{{ route('shop.index') }}">All Categories</a>
@@ -78,8 +99,10 @@
     </nav>
   </header>
 
+  <!-- ===== MOBILE MENU ===== -->
   <div class="mobile-menu-overlay" id="mobileMenuOverlay"
-    onclick="this.classList.remove('show');document.getElementById('mobileMenu').classList.remove('show');"></div>
+    onclick="this.classList.remove('show');document.getElementById('mobileMenu').classList.remove('show');">
+  </div>
   <div class="mobile-menu" id="mobileMenu">
     <div class="mobile-menu-head">
       <strong style="font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;">Menu</strong>
@@ -96,10 +119,20 @@
       @endforeach
       <div class="divider"></div>
       <a href="{{ route('cart.index') }}">🛒 Cart</a>
-      <a href="{{ auth()->check() ? route('orders.mine') : route('login') }}">👤 Account</a>
+      <a href="#">ℹ️ About Us</a>
+      <a href="{{ route('orders.track') }}">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <rect x="1" y="3" width="15" height="13"></rect>
+          <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+          <circle cx="5.5" cy="18.5" r="2.5"></circle>
+          <circle cx="18.5" cy="18.5" r="2.5"></circle>
+        </svg>
+        <span>Track Order</span></a>
     </div>
   </div>
 
+  <!-- ===== FLASH MESSAGES ===== -->
   @if (session('success'))
     <div class="container" style="margin-top:14px;">
       <div
@@ -116,11 +149,12 @@
       </div>
     </div>
   @endif
-  <!-- Floating Cart Quick View -->
+
+  <!-- ===== CART PANEL ===== -->
   <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
   <div class="cart-panel" id="cartPanel">
     <div class="cart-panel-header">
-      <h3 style="background-color:red">
+      <h3>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
           stroke-linecap="round" stroke-linejoin="round">
           <circle cx="9" cy="20" r="1"></circle>
@@ -137,25 +171,29 @@
         </svg>
       </button>
     </div>
-
     <div class="cart-panel-body" id="cartPanelBody">
-      @if(isset($cartItems) && count($cartItems) > 0)
-        @foreach($cartItems as $item)
-          <div class="cart-item" data-id="{{ $item['id'] }}">
+      @if($cart->items->count() > 0)
+        @foreach($cart->items as $item)
+          <div class="cart-item" data-id="{{ $item->id }}">
             <div class="cart-item-image">
-              <span style="font-size:32px;">{{ $item['emoji'] ?? '🛒' }}</span>
+              @if($item->product && $item->product->image)
+                <img src="{{ asset('storage/' . $item->product->image) }}" alt="{{ $item->product->name }}"
+                  style="width:50px;height:50px;object-fit:cover;border-radius:8px;">
+              @else
+                <span style="font-size:32px;">🛒</span>
+              @endif
             </div>
             <div class="cart-item-details">
-              <div class="cart-item-name">{{ $item['name'] }}</div>
-              <div class="cart-item-price">{{ $item['price'] }}</div>
+              <div class="cart-item-name">{{ $item->product->name ?? 'Product' }}</div>
+              <div class="cart-item-price">৳{{ number_format($item->unit_price, 2) }}</div>
             </div>
             <div class="cart-item-actions">
               <div class="quantity-control">
-                <button class="qty-btn" onclick="updateQuantity({{ $item['id'] }}, -1)">−</button>
-                <span class="qty-value">{{ $item['quantity'] }}</span>
-                <button class="qty-btn" onclick="updateQuantity({{ $item['id'] }}, 1)">+</button>
+                <button type="button" class="qty-btn" onclick="updateQuantity({{ $item->id }}, -1)">−</button>
+                <span class="qty-value">{{ $item->quantity }}</span>
+                <button type="button" class="qty-btn" onclick="updateQuantity({{ $item->id }}, 1)">+</button>
               </div>
-              <button class="cart-item-remove" onclick="removeItem({{ $item['id'] }})">
+              <button type="button" class="cart-item-remove" onclick="removeItem({{ $item->id }})">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                   stroke-linecap="round" stroke-linejoin="round">
                   <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -170,16 +208,15 @@
           <span style="font-size:64px;">🛒</span>
           <h4>Your cart is empty</h4>
           <p>Start shopping to add items to your cart</p>
-          <a href="{{ route('shop.index') }}" class="btn amber" onclick="closeCart()">Start Shopping</a>
+          <a href="{{ route('shop.index') }}" class="btn deepblue" onclick="closeCart()">Start Shopping</a>
         </div>
       @endif
     </div>
-
     <div class="cart-panel-footer" id="cartPanelFooter">
       <div class="cart-summary">
         <div class="cart-subtotal">
           <span>Subtotal</span>
-          <span class="cart-total-price" id="cartTotalPrice">$0.00</span>
+          <span class="cart-total-price" id="cartTotalPrice">৳{{ number_format($cart->subtotal) }}</span>
         </div>
         <div class="cart-shipping">
           <span>Shipping</span>
@@ -187,13 +224,16 @@
         </div>
       </div>
       <div class="cart-actions">
-        <a href="{{ route('cart.index') }}" class="btn outline" onclick="closeCart()">View Cart</a>
-        <a href="{{ route('checkout.index') }}" class="btn amber" onclick="closeCart()">Checkout →</a>
+        <a href="{{ route('cart.index') }}" class="btn deepoutline" onclick="closeCart()">View Cart</a>
+        <a href="{{ route('checkout.index') }}" class="btn deepblue" onclick="closeCart()">Checkout →</a>
       </div>
     </div>
   </div>
+
+  <!-- ===== MAIN CONTENT ===== -->
   @yield('content')
 
+  <!-- ===== FOOTER ===== -->
   <footer>
     <div class="container foot-grid">
       <div>
@@ -212,7 +252,7 @@
       <div>
         <h4>Company</h4>
         <ul>
-          <li>About Us</li>
+          <li><a href="#">About Us</a></li>
           <li>Careers</li>
           <li>Terms of Service</li>
           <li>Privacy Policy</li>
@@ -233,6 +273,23 @@
     </div>
   </footer>
 
+  <!-- ===== FLOATING CART BUTTON ===== -->
+  <button class="floating-cart-btn" onclick="toggleCart()" aria-label="Open Cart">
+    <div class="cart-icon-box">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="9" cy="21" r="1"></circle>
+        <circle cx="20" cy="21" r="1"></circle>
+        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+      </svg>
+      <span class="badge" id="floatingCartBadge">{{ $globalCartCount ?? 0 }} items</span>
+    </div>
+    <div class="cart-price-box">
+      <span id="floatingCartTotal">৳{{ number_format($globalCartTotal ?? 0, 2) }}</span>
+    </div>
+  </button>
+
+  <!-- ===== JAVASCRIPT ===== -->
   <script src="{{ asset('js/app.js') }}"></script>
   @stack('scripts')
 

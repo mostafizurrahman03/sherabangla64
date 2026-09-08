@@ -20,14 +20,14 @@ class ProductController extends Controller
         }
 
         if ($request->filled('min_price')) {
-            $query->where('price', '>=', $request->min_price);
+            $query->where('sale_price', '>=', $request->min_price);
         }
         if ($request->filled('max_price')) {
-            $query->where('price', '<=', $request->max_price);
+            $query->where('sale_price', '<=', $request->max_price);
         }
 
-        $query->when($request->sort === 'low_high', fn($q) => $q->orderBy('price'))
-            ->when($request->sort === 'high_low', fn($q) => $q->orderByDesc('price'))
+        $query->when($request->sort === 'low_high', fn($q) => $q->orderBy('sale_price'))
+            ->when($request->sort === 'high_low', fn($q) => $q->orderByDesc('sale_price'))
             ->when(!$request->sort, fn($q) => $q->orderByDesc('is_featured'));
 
         $products = $query->paginate(20)->withQueryString();

@@ -86,12 +86,12 @@ class ProductController extends Controller
         |
         */
 
-        $allowedPerPage = [10, 25, 50, 100];
+        $allowedPerPage = [25, 50, 100];
 
-        $perPage = (int) $request->get('per_page', 10);
+        $perPage = (int) $request->get('per_page', 15);
 
         if (!in_array($perPage, $allowedPerPage)) {
-            $perPage = 10;
+            $perPage = 15;
         }
 
 
@@ -102,7 +102,6 @@ class ProductController extends Controller
         */
 
         $products = $query
-            ->orderBy('sort_order', 'asc')
             ->latest()
             ->paginate($perPage)
             ->withQueryString();
@@ -173,7 +172,6 @@ class ProductController extends Controller
                 'nullable',
                 'string',
                 'max:255',
-                'unique:products,slug',
             ],
 
             'sku' => [
@@ -356,6 +354,12 @@ class ProductController extends Controller
         | Create Product
         |--------------------------------------------------------------------------
         */
+        do {
+            $sku = (string) random_int(1000, 9999);
+        } while (Product::where('sku', $sku)->exists());
+
+        $product = Product::latest('id')->first();
+        $last_order = $product?->sort_order ?? 0;
 
         Product::create([
 
@@ -365,7 +369,7 @@ class ProductController extends Controller
 
             'slug' => $slug,
 
-            'sku' => $validated['sku'] ?? null,
+            'sku' => $sku,
 
             'short_desc' => $validated['short_desc'] ?? null,
 
@@ -397,7 +401,7 @@ class ProductController extends Controller
 
             'is_best' => $request->boolean('is_best'),
 
-            'sort_order' => $validated['sort_order'] ?? 0,
+            'sort_order' => $validated['sort_order'] ?? ($last_order + 1),
 
             'meta_title' => $validated['meta_title'] ?? null,
 
@@ -622,8 +626,8 @@ class ProductController extends Controller
 
             $counter++;
         }
-
-
+        $product_sort = Product::latest('id')->first();
+        $last_order = $product_sort?->sort_order ?? 0;
         /*
         |--------------------------------------------------------------------------
         | Image Upload
@@ -716,8 +720,8 @@ class ProductController extends Controller
             'is_best' =>
                 $request->boolean('is_best'),
 
-            'sort_order' =>
-                $validated['sort_order'] ?? 0,
+
+            'sort_order' => $validated['sort_order'] ?? ($last_order + 1),
 
             'meta_title' =>
                 $validated['meta_title'] ?? null,

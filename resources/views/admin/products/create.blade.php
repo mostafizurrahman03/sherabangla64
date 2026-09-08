@@ -24,264 +24,280 @@
 
   <section class="content">
     <div class="container-fluid">
-      <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
-        @csrf
+        <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
+          @csrf
 
-        <div class="row">
-          {{-- Left Column: Main Product Details --}}
-          <div class="col-md-8">
+          <div class="row">
+            {{-- Left Column: Main Product Details --}}
+            <div class="col-md-8">
 
-            {{-- Basic Information --}}
-            <div class="card card-primary">
-              <div class="card-header">
-                <h3 class="card-title">Basic Information</h3>
-              </div>
-              <div class="card-body">
-
-                {{-- Product Name --}}
-                <div class="form-group">
-                  <label for="name">Product Name <span class="text-danger">*</span></label>
-                  <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror"
-                    value="{{ old('name') }}" required placeholder="Enter product name">
-                  @error('name') <span class="invalid-feedback">{{ $message }}</span> @enderror
+              {{-- Basic Information --}}
+              <div class="card card-primary">
+                <div class="card-header">
+                  <h3 class="card-title">Basic Information</h3>
                 </div>
+                <div class="card-body">
 
-                <div class="row">
-                  {{-- Slug --}}
-                  <div class="col-md-6 form-group">
-                    <label for="slug">Slug (Optional)</label>
-                    <input type="text" name="slug" id="slug" class="form-control @error('slug') is-invalid @enderror"
-                      value="{{ old('slug') }}" placeholder="Auto-generated if left empty">
-                    @error('slug') <span class="invalid-feedback">{{ $message }}</span> @enderror
+                  {{-- Product Name --}}
+                  <div class="form-group">
+                    <label for="name">Product Name <span class="text-danger">*</span></label>
+                    <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror"
+                      value="{{ old('name') }}" required placeholder="Enter product name">
+                    @error('name') <span class="invalid-feedback">{{ $message }}</span> @enderror
                   </div>
 
-                  {{-- SKU --}}
-                  <div class="col-md-6 form-group">
-                    <label for="sku">SKU</label>
-                    <input type="text" name="sku" id="sku" class="form-control @error('sku') is-invalid @enderror"
-                      value="{{ old('sku') }}" placeholder="e.g. PROD-1001">
-                    @error('sku') <span class="invalid-feedback">{{ $message }}</span> @enderror
+                  <div class="row">
+                    {{-- Slug --}}
+                    <div class="col-md-6 form-group">
+                      <label for="slug">Slug (Optional)</label>
+                      <input type="text" name="slug" id="slug" class="form-control @error('slug') is-invalid @enderror"
+                        value="{{ old('slug') }}" placeholder="Auto-generated if left empty">
+                      @error('slug') <span class="invalid-feedback">{{ $message }}</span> @enderror
+                    </div>
+
+                    {{-- SKU --}}
+                    <div class="col-md-6 form-group">
+                      <label for="sku">SKU-CODE</label>
+                      <input type="text" name="sku" id="sku" class="form-control @error('sku') is-invalid @enderror"
+                        value="{{ old('sku') }}" placeholder="Any number">
+                      @error('sku') <span class="invalid-feedback">{{ $message }}</span> @enderror
+                    </div>
+                  </div>
+
+                  {{-- Short Description --}}
+                  <div class="form-group">
+                    <label for="short_desc">Short Description</label>
+                    <textarea name="short_desc" id="short_desc" rows="3"
+                      class="form-control @error('short_desc') is-invalid @enderror"
+                      placeholder="Brief overview of the product">{{ old('short_desc') }}</textarea>
+                    @error('short_desc') <span class="invalid-feedback">{{ $message }}</span> @enderror
+                  </div>
+
+                  {{-- Full Description --}}
+                  <!-- <div class="form-group">
+                    <label for="full_desc">Full Description</label>
+                    <textarea name="full_desc" id="full_desc" rows="6"
+                      class="form-control @error('full_desc') is-invalid @enderror"
+                      placeholder="Detailed product specification">{{ old('full_desc') }}</textarea>
+                    @error('full_desc') <span class="invalid-feedback">{{ $message }}</span> @enderror
+                  </div> -->
+
+                  <div class="form-group">
+                      <label for="full_desc">Full Description</label>
+
+                      <textarea
+                          name="full_desc"
+                          id="full_desc"
+                          rows="6"
+                          class="form-control @error('full_desc') is-invalid @enderror"
+                          placeholder="Detailed product specification"
+                      >{{ old('full_desc') }}</textarea>
+
+                      @error('full_desc')
+                          <span class="invalid-feedback">{{ $message }}</span>
+                      @enderror
+                  </div>
+
+                </div>
+              </div>
+
+              {{-- Pricing & Inventory --}}
+              <div class="card card-secondary">
+                <div class="card-header">
+                  <h3 class="card-title">Pricing & Inventory</h3>
+                </div>
+                <div class="card-body">
+                  <div class="row">
+
+                    {{-- Regular Price --}}
+                    <div class="col-md-4 form-group">
+                      <label for="regular_price">Regular Price <span class="text-danger">*</span></label>
+                      <input type="number" step="0.01" name="regular_price" id="regular_price"
+                        class="form-control @error('regular_price') is-invalid @enderror" value="{{ old('regular_price') }}"
+                        required placeholder="0.00">
+                      @error('regular_price') <span class="invalid-feedback">{{ $message }}</span> @enderror
+                    </div>
+
+                    {{-- Sale Price --}}
+                    <div class="col-md-4 form-group">
+                      <label for="sale_price">Sale Price</label>
+                      <input type="number" step="0.01" name="sale_price" id="sale_price"
+                        class="form-control @error('sale_price') is-invalid @enderror" value="{{ old('sale_price') }}"
+                        placeholder="0.00">
+                      @error('sale_price') <span class="invalid-feedback">{{ $message }}</span> @enderror
+                    </div>
+
+                    {{-- Discount --}}
+                    <div class="col-md-4 form-group">
+                      <label for="discount">Discount Amount / %</label>
+                      <input type="number" step="0.01" name="discount" id="discount"
+                        class="form-control @error('discount') is-invalid @enderror" value="{{ old('discount', 0) }}">
+                      @error('discount') <span class="invalid-feedback">{{ $message }}</span> @enderror
+                    </div>
+
+                    {{-- Stock Quantity --}}
+                    <div class="col-md-6 form-group">
+                      <label for="stock_quantity">Stock Quantity</label>
+                      <input type="number" name="stock_quantity" id="stock_quantity"
+                        class="form-control @error('stock_quantity') is-invalid @enderror"
+                        value="{{ old('stock_quantity', 0) }}">
+                      @error('stock_quantity') <span class="invalid-feedback">{{ $message }}</span> @enderror
+                    </div>
+
+                    {{-- Low Stock Threshold --}}
+                    <div class="col-md-6 form-group">
+                      <label for="low_stock_threshold">Low Stock Threshold</label>
+                      <input type="number" name="low_stock_threshold" id="low_stock_threshold"
+                        class="form-control @error('low_stock_threshold') is-invalid @enderror"
+                        value="{{ old('low_stock_threshold', 5) }}">
+                      @error('low_stock_threshold') <span class="invalid-feedback">{{ $message }}</span> @enderror
+                    </div>
+
                   </div>
                 </div>
-
-                {{-- Short Description --}}
-                <div class="form-group">
-                  <label for="short_desc">Short Description</label>
-                  <textarea name="short_desc" id="short_desc" rows="3"
-                    class="form-control @error('short_desc') is-invalid @enderror"
-                    placeholder="Brief overview of the product">{{ old('short_desc') }}</textarea>
-                  @error('short_desc') <span class="invalid-feedback">{{ $message }}</span> @enderror
-                </div>
-
-                {{-- Full Description --}}
-                <div class="form-group">
-                  <label for="full_desc">Full Description</label>
-                  <textarea name="full_desc" id="full_desc" rows="6"
-                    class="form-control @error('full_desc') is-invalid @enderror"
-                    placeholder="Detailed product specification">{{ old('full_desc') }}</textarea>
-                  @error('full_desc') <span class="invalid-feedback">{{ $message }}</span> @enderror
-                </div>
-
               </div>
+
+              {{-- SEO Meta Information --}}
+              <div class="card card-info">
+                <div class="card-header">
+                  <h3 class="card-title">SEO Optimization</h3>
+                </div>
+                <div class="card-body">
+                  <div class="form-group">
+                    <label for="meta_title">Meta Title</label>
+                    <input type="text" name="meta_title" id="meta_title"
+                      class="form-control @error('meta_title') is-invalid @enderror" value="{{ old('meta_title') }}"
+                      placeholder="Search engine title">
+                    @error('meta_title') <span class="invalid-feedback">{{ $message }}</span> @enderror
+                  </div>
+
+                  <div class="form-group">
+                    <label for="meta_description">Meta Description</label>
+                    <textarea name="meta_description" id="meta_description" rows="3"
+                      class="form-control @error('meta_description') is-invalid @enderror"
+                      placeholder="Search engine description">{{ old('meta_description') }}</textarea>
+                    @error('meta_description') <span class="invalid-feedback">{{ $message }}</span> @enderror
+                  </div>
+                </div>
+              </div>
+
             </div>
 
-            {{-- Pricing & Inventory --}}
-            <div class="card card-secondary">
-              <div class="card-header">
-                <h3 class="card-title">Pricing & Inventory</h3>
-              </div>
-              <div class="card-body">
-                <div class="row">
+            {{-- Right Column: Organization, Status & Media --}}
+            <div class="col-md-4">
 
-                  {{-- Regular Price --}}
-                  <div class="col-md-4 form-group">
-                    <label for="regular_price">Regular Price <span class="text-danger">*</span></label>
-                    <input type="number" step="0.01" name="regular_price" id="regular_price"
-                      class="form-control @error('regular_price') is-invalid @enderror" value="{{ old('regular_price') }}"
-                      required placeholder="0.00">
-                    @error('regular_price') <span class="invalid-feedback">{{ $message }}</span> @enderror
+
+
+              {{-- Categories & Brand --}}
+              <div class="card card-secondary">
+                <div class="card-header">
+                  <h3 class="card-title">Organization</h3>
+                </div>
+                <div class="card-body">
+
+                  {{-- Category --}}
+                  <div class="form-group">
+                    <label for="category_id">Category <span class="text-danger">*</span></label>
+                    <select name="category_id" id="category_id"
+                      class="form-control @error('category_id') is-invalid @enderror" required>
+                      <option value="">Select Category</option>
+                      @foreach($categories as $category)
+                        <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                          {{ $category->name }}
+                        </option>
+                      @endforeach
+                    </select>
+                    @error('category_id') <span class="invalid-feedback">{{ $message }}</span> @enderror
                   </div>
 
-                  {{-- Sale Price --}}
-                  <div class="col-md-4 form-group">
-                    <label for="sale_price">Sale Price</label>
-                    <input type="number" step="0.01" name="sale_price" id="sale_price"
-                      class="form-control @error('sale_price') is-invalid @enderror" value="{{ old('sale_price') }}"
-                      placeholder="0.00">
-                    @error('sale_price') <span class="invalid-feedback">{{ $message }}</span> @enderror
+                  {{-- Sub Category --}}
+                  <div class="form-group">
+                    <label for="sub_category_id">Sub Category</label>
+                    <select name="sub_category_id" id="sub_category_id"
+                      class="form-control @error('sub_category_id') is-invalid @enderror">
+                      <option value="">Select Sub Category</option>
+                      @foreach($subCategories ?? [] as $subCategory)
+                        <option value="{{ $subCategory->id }}" {{ old('sub_category_id') == $subCategory->id ? 'selected' : '' }}>{{ $subCategory->name }}</option>
+                      @endforeach
+                    </select>
+                    @error('sub_category_id') <span class="invalid-feedback">{{ $message }}</span> @enderror
                   </div>
 
-                  {{-- Discount --}}
-                  <div class="col-md-4 form-group">
-                    <label for="discount">Discount Amount / %</label>
-                    <input type="number" step="0.01" name="discount" id="discount"
-                      class="form-control @error('discount') is-invalid @enderror" value="{{ old('discount', 0) }}">
-                    @error('discount') <span class="invalid-feedback">{{ $message }}</span> @enderror
-                  </div>
-
-                  {{-- Stock Quantity --}}
-                  <div class="col-md-6 form-group">
-                    <label for="stock_quantity">Stock Quantity</label>
-                    <input type="number" name="stock_quantity" id="stock_quantity"
-                      class="form-control @error('stock_quantity') is-invalid @enderror"
-                      value="{{ old('stock_quantity', 0) }}">
-                    @error('stock_quantity') <span class="invalid-feedback">{{ $message }}</span> @enderror
-                  </div>
-
-                  {{-- Low Stock Threshold --}}
-                  <div class="col-md-6 form-group">
-                    <label for="low_stock_threshold">Low Stock Threshold</label>
-                    <input type="number" name="low_stock_threshold" id="low_stock_threshold"
-                      class="form-control @error('low_stock_threshold') is-invalid @enderror"
-                      value="{{ old('low_stock_threshold', 5) }}">
-                    @error('low_stock_threshold') <span class="invalid-feedback">{{ $message }}</span> @enderror
+                  {{-- Brand --}}
+                  <div class="form-group">
+                    <label for="brand_id">Brand</label>
+                    <select name="brand_id" id="brand_id" class="form-control @error('brand_id') is-invalid @enderror">
+                      <option value="">Select Brand</option>
+                      @foreach($brands ?? [] as $brand)
+                        <option value="{{ $brand->id }}" {{ old('brand_id') == $brand->id ? 'selected' : '' }}>
+                          {{ $brand->name }}
+                        </option>
+                      @endforeach
+                    </select>
+                    @error('brand_id') <span class="invalid-feedback">{{ $message }}</span> @enderror
                   </div>
 
                 </div>
               </div>
+
+              {{-- Image Upload --}}
+              <!-- <div class="card card-secondary">
+                <div class="card-header">
+                  <h3 class="card-title">Product Image</h3>
+                </div>
+                <div class="card-body">
+                  <div class="form-group">
+                    <div class="custom-file">
+                      <input type="file" name="image" class="custom-file-input @error('image') is-invalid @enderror"
+                        id="image" accept="image/*">
+                      <label class="custom-file-label" for="image">Choose image</label>
+                    </div>
+                    @error('image') <span class="text-danger small">{{ $message }}</span> @enderror
+                  </div>
+                </div>
+              </div> -->
+
+          {{-- Image Upload --}}
+          <div class="card card-secondary">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-image"></i> Product Image
+                </h3>
             </div>
-
-            {{-- SEO Meta Information --}}
-            <div class="card card-info">
-              <div class="card-header">
-                <h3 class="card-title">SEO Optimization</h3>
-              </div>
-              <div class="card-body">
-                <div class="form-group">
-                  <label for="meta_title">Meta Title</label>
-                  <input type="text" name="meta_title" id="meta_title"
-                    class="form-control @error('meta_title') is-invalid @enderror" value="{{ old('meta_title') }}"
-                    placeholder="Search engine title">
-                  @error('meta_title') <span class="invalid-feedback">{{ $message }}</span> @enderror
+          <div class="card-body">
+            <div class="form-group">
+                <div class="custom-file">
+                    <input 
+                      type="file" 
+                      name="image" 
+                      class="custom-file-input @error('image') is-invalid @enderror" 
+                      id="image" 
+                      accept="image/*"
+                    >
+                  <label class="custom-file-label" for="image">Choose Product Image</label>
                 </div>
-
-                <div class="form-group">
-                  <label for="meta_description">Meta Description</label>
-                  <textarea name="meta_description" id="meta_description" rows="3"
-                    class="form-control @error('meta_description') is-invalid @enderror"
-                    placeholder="Search engine description">{{ old('meta_description') }}</textarea>
-                  @error('meta_description') <span class="invalid-feedback">{{ $message }}</span> @enderror
-                </div>
-              </div>
-            </div>
-
+                @error('image') 
+                  <span class="text-danger small">{{ $message }}</span> 
+                @enderror
+                <small class="form-text text-muted">Recommended size: 800x800px. Max 2MB.</small>
           </div>
 
-          {{-- Right Column: Organization, Status & Media --}}
-          <div class="col-md-4">
-
-
-
-            {{-- Categories & Brand --}}
-            <div class="card card-secondary">
-              <div class="card-header">
-                <h3 class="card-title">Organization</h3>
-              </div>
-              <div class="card-body">
-
-                {{-- Category --}}
-                <div class="form-group">
-                  <label for="category_id">Category <span class="text-danger">*</span></label>
-                  <select name="category_id" id="category_id"
-                    class="form-control @error('category_id') is-invalid @enderror" required>
-                    <option value="">Select Category</option>
-                    @foreach($categories as $category)
-                      <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
-                        {{ $category->name }}
-                      </option>
-                    @endforeach
-                  </select>
-                  @error('category_id') <span class="invalid-feedback">{{ $message }}</span> @enderror
-                </div>
-
-                {{-- Sub Category --}}
-                <div class="form-group">
-                  <label for="sub_category_id">Sub Category</label>
-                  <select name="sub_category_id" id="sub_category_id"
-                    class="form-control @error('sub_category_id') is-invalid @enderror">
-                    <option value="">Select Sub Category</option>
-                    @foreach($subCategories ?? [] as $subCategory)
-                      <option value="{{ $subCategory->id }}" {{ old('sub_category_id') == $subCategory->id ? 'selected' : '' }}>{{ $subCategory->name }}</option>
-                    @endforeach
-                  </select>
-                  @error('sub_category_id') <span class="invalid-feedback">{{ $message }}</span> @enderror
-                </div>
-
-                {{-- Brand --}}
-                <div class="form-group">
-                  <label for="brand_id">Brand</label>
-                  <select name="brand_id" id="brand_id" class="form-control @error('brand_id') is-invalid @enderror">
-                    <option value="">Select Brand</option>
-                    @foreach($brands ?? [] as $brand)
-                      <option value="{{ $brand->id }}" {{ old('brand_id') == $brand->id ? 'selected' : '' }}>
-                        {{ $brand->name }}
-                      </option>
-                    @endforeach
-                  </select>
-                  @error('brand_id') <span class="invalid-feedback">{{ $message }}</span> @enderror
-                </div>
-
-              </div>
-            </div>
-
-            {{-- Image Upload --}}
-            <!-- <div class="card card-secondary">
-              <div class="card-header">
-                <h3 class="card-title">Product Image</h3>
-              </div>
-              <div class="card-body">
-                <div class="form-group">
-                  <div class="custom-file">
-                    <input type="file" name="image" class="custom-file-input @error('image') is-invalid @enderror"
-                      id="image" accept="image/*">
-                    <label class="custom-file-label" for="image">Choose image</label>
-                  </div>
-                  @error('image') <span class="text-danger small">{{ $message }}</span> @enderror
-                </div>
-              </div>
-            </div> -->
-
-            {{-- Image Upload --}}
-          <div class="card card-secondary">
-    <div class="card-header">
-        <h3 class="card-title">
-            <i class="fas fa-image"></i> Product Image
-        </h3>
+          {{-- Image Preview --}}
+          <div id="image-preview" class="mt-2 text-center" style="display: none;">
+              <img 
+                  id="image-preview-img" 
+                  src="#" 
+                  alt="Image Preview" 
+                  class="img-thumbnail" 
+                  style="max-height: 150px; max-width: 150px;"
+              >
+              <br>
+              <button type="button" onclick="removeImage()" class="btn btn-danger btn-sm mt-2">
+                  <i class="fas fa-times"></i> Remove
+              </button>
+          </div>
+      </div>
     </div>
-    <div class="card-body">
-        <div class="form-group">
-            <div class="custom-file">
-                <input 
-                    type="file" 
-                    name="image" 
-                    class="custom-file-input @error('image') is-invalid @enderror" 
-                    id="image" 
-                    accept="image/*"
-                >
-                <label class="custom-file-label" for="image">Choose Product Image</label>
-            </div>
-            @error('image') 
-                <span class="text-danger small">{{ $message }}</span> 
-            @enderror
-            <small class="form-text text-muted">Recommended size: 800x800px. Max 2MB.</small>
-        </div>
-
-        {{-- Image Preview --}}
-        <div id="image-preview" class="mt-2 text-center" style="display: none;">
-            <img 
-                id="image-preview-img" 
-                src="#" 
-                alt="Image Preview" 
-                class="img-thumbnail" 
-                style="max-height: 150px; max-width: 150px;"
-            >
-            <br>
-            <button type="button" onclick="removeImage()" class="btn btn-danger btn-sm mt-2">
-                <i class="fas fa-times"></i> Remove
-            </button>
-        </div>
-    </div>
-</div>
 
           
 
@@ -448,3 +464,24 @@
     }); // End DOMContentLoaded
 </script>
 @endpush
+
+@push('js')
+<script>
+    $(document).ready(function () {
+        $('#full_desc').summernote({
+            height: 300,
+            placeholder: 'Detailed product specification...',
+            toolbar: [
+                ['style', ['style']],
+                ['font', ['bold', 'italic', 'underline', 'clear']],
+                ['fontname', ['fontname']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['table', ['table']],
+                ['insert', ['link', 'picture', 'video']],
+                ['view', ['fullscreen', 'codeview', 'help']]
+            ]
+        });
+    });
+</script>
+@endpush 

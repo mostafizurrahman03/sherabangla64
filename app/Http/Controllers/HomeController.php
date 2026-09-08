@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Slider;
 
 class HomeController extends Controller
 {
@@ -22,28 +23,42 @@ class HomeController extends Controller
             ->get();
 
         // Flash Sale Products
-        $flashSale = Product::onSale()
+        $flashSale = Product::where("is_flash", 1)
             ->latest()
             ->take(10)
             ->get();
 
         // Featured / Best Sellers
-        $bestSellers = Product::featured()
-            ->orderBy('sort_order')
+        $bestSellers = Product::where("is_best", 1)
+            ->latest()
             ->take(10)
             ->get();
 
         // New Arrivals
-        $newArrivals = Product::published()
+        $newArrivals = Product::where("is_featured", 1)
             ->latest()
             ->take(10)
             ->get();
+        $sliders = Slider::where('is_active', 1)
+            ->where('position', 'main_slider')
+            ->orderBy('sort_order', 'asc')
+            ->get();
+
+        $slide_top = Slider::where('is_active', 1)
+            ->where('position', 'side_top')
+            ->first();
+        $slide_bottom = Slider::where('is_active', 1)
+            ->where('position', 'side_bottom')
+            ->first();
 
         return view('home.index', compact(
             'categories',
             'flashSale',
             'bestSellers',
-            'newArrivals'
+            'sliders',
+            'newArrivals',
+            'slide_bottom',
+            'slide_top',
         ));
 
 

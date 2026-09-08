@@ -6,9 +6,9 @@
 
 @include('admin.components.alert')
 
+{{-- Content Header --}}
 <section class="content-header">
     <div class="container-fluid">
-
         <div class="row mb-2">
 
             <div class="col-sm-6">
@@ -16,7 +16,6 @@
             </div>
 
             <div class="col-sm-6">
-
                 <ol class="breadcrumb float-sm-right">
 
                     <li class="breadcrumb-item">
@@ -30,15 +29,14 @@
                     </li>
 
                 </ol>
-
             </div>
 
         </div>
-
     </div>
 </section>
 
 
+{{-- Main Content --}}
 <section class="content">
 
     <div class="container-fluid">
@@ -68,7 +66,7 @@
             </div>
 
 
-            {{-- Search --}}
+            {{-- Filters --}}
             <div class="card-body border-bottom">
 
                 <form
@@ -78,19 +76,45 @@
 
                     <div class="row">
 
+                        {{-- Position --}}
                         <div class="col-md-4 mb-2">
 
-                            <input
-                                type="text"
-                                name="search"
+                            <select
+                                name="position"
                                 class="form-control"
-                                placeholder="Search slider..."
-                                value="{{ request('search') }}"
                             >
+
+                                <option value="">
+                                    All Positions
+                                </option>
+
+                                <option
+                                    value="main_slider"
+                                    @selected(request('position') == 'main_slider')
+                                >
+                                    Main Slider
+                                </option>
+
+                                <option
+                                    value="side_top"
+                                    @selected(request('position') == 'side_top')
+                                >
+                                    Side Top
+                                </option>
+
+                                <option
+                                    value="side_bottom"
+                                    @selected(request('position') == 'side_bottom')
+                                >
+                                    Side Bottom
+                                </option>
+
+                            </select>
 
                         </div>
 
 
+                        {{-- Status --}}
                         <div class="col-md-3 mb-2">
 
                             <select
@@ -121,6 +145,7 @@
                         </div>
 
 
+                        {{-- Sort By --}}
                         <div class="col-md-3 mb-2">
 
                             <select
@@ -136,10 +161,10 @@
                                 </option>
 
                                 <option
-                                    value="title"
-                                    @selected(request('sort_by') === 'title')
+                                    value="position"
+                                    @selected(request('sort_by') === 'position')
                                 >
-                                    Title
+                                    Position
                                 </option>
 
                                 <option
@@ -156,19 +181,27 @@
                                     Start Date
                                 </option>
 
+                                <option
+                                    value="end_at"
+                                    @selected(request('sort_by') === 'end_at')
+                                >
+                                    End Date
+                                </option>
+
                             </select>
 
                         </div>
 
 
+                        {{-- Buttons --}}
                         <div class="col-md-2 mb-2">
 
                             <button
                                 type="submit"
                                 class="btn btn-primary"
                             >
-                                <i class="fas fa-search"></i>
-                                Search
+                                <i class="fas fa-filter"></i>
+                                Filter
                             </button>
 
                             <a
@@ -200,16 +233,16 @@
                                 #
                             </th>
 
-                            <th style="width: 100px;">
+                            <th style="width: 110px;">
                                 Image
                             </th>
 
                             <th>
-                                Title
+                                Position
                             </th>
 
                             <th>
-                                Button
+                                Link
                             </th>
 
                             <th style="width: 80px;">
@@ -228,7 +261,7 @@
                                 Created
                             </th>
 
-                            <th style="width: 140px;">
+                            <th style="width: 130px;">
                                 Actions
                             </th>
 
@@ -252,49 +285,19 @@
                                 {{-- Image --}}
                                 <td>
 
-                                    <img
-                                        src="{{ asset('storage/' . $slider->image) }}"
-                                        alt="{{ $slider->title }}"
-                                        class="slider-thumb"
-                                        width="70"
-                                    >
+                                    @if($slider->image)
 
-                                </td>
-
-
-                                {{-- Title --}}
-                                <td>
-
-                                    <strong>
-                                        {{ $slider->title ?? 'No Title' }}
-                                    </strong>
-
-                                    @if($slider->subtitle)
-
-                                        <br>
-
-                                        <small class="text-muted">
-                                            {{ Str::limit($slider->subtitle, 50) }}
-                                        </small>
-
-                                    @endif
-
-                                </td>
-
-
-                                {{-- Button --}}
-                                <td>
-
-                                    @if($slider->button_text)
-
-                                        <span class="badge badge-info">
-                                            {{ $slider->button_text }}
-                                        </span>
+                                        <img
+                                            src="{{ asset('storage/' . $slider->image) }}"
+                                            alt="Slider Image"
+                                            class="slider-thumb"
+                                            width="70"
+                                        >
 
                                     @else
 
                                         <span class="text-muted">
-                                            N/A
+                                            No Image
                                         </span>
 
                                     @endif
@@ -302,10 +305,73 @@
                                 </td>
 
 
-                                {{-- Sort --}}
+                                {{-- Position --}}
+                                <td>
+
+                                    @if($slider->position === 'main_slider')
+
+                                        <span class="badge badge-primary">
+                                            Main Slider
+                                        </span>
+
+                                    @elseif($slider->position === 'side_top')
+
+                                        <span class="badge badge-info">
+                                            Side Top
+                                        </span>
+
+                                    @elseif($slider->position === 'side_bottom')
+
+                                        <span class="badge badge-secondary">
+                                            Side Bottom
+                                        </span>
+
+                                    @else
+
+                                        <span class="badge badge-light">
+                                            Unknown
+                                        </span>
+
+                                    @endif
+
+                                </td>
+
+
+                                {{-- Link --}}
+                                <td>
+
+                                    @if($slider->link_url)
+
+                                        <a
+                                            href="{{ $slider->link_url }}"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="text-primary"
+                                            title="{{ $slider->link_url }}"
+                                        >
+
+                                            <i class="fas fa-external-link-alt"></i>
+                                            View Link
+
+                                        </a>
+
+                                    @else
+
+                                        <span class="text-muted">
+                                            No Link
+                                        </span>
+
+                                    @endif
+
+                                </td>
+
+
+                                {{-- Sort Order --}}
                                 <td class="text-center">
 
-                                    {{ $slider->sort_order }}
+                                    <span class="badge badge-light">
+                                        {{ $slider->sort_order }}
+                                    </span>
 
                                 </td>
 
@@ -318,14 +384,26 @@
                                         <small>
 
                                             @if($slider->start_at)
-                                                <strong>Start:</strong>
+
+                                                <strong>
+                                                    Start:
+                                                </strong>
+
                                                 {{ $slider->start_at->format('d M Y h:i A') }}
+
                                                 <br>
+
                                             @endif
 
+
                                             @if($slider->end_at)
-                                                <strong>End:</strong>
+
+                                                <strong>
+                                                    End:
+                                                </strong>
+
                                                 {{ $slider->end_at->format('d M Y h:i A') }}
+
                                             @endif
 
                                         </small>
@@ -334,7 +412,6 @@
 
                                         <span class="badge badge-secondary">
                                             Always
-
                                         </span>
 
                                     @endif
@@ -350,6 +427,7 @@
                                         <span class="badge badge-success">
 
                                             <i class="fas fa-check-circle"></i>
+
                                             Active
 
                                         </span>
@@ -359,6 +437,7 @@
                                         <span class="badge badge-danger">
 
                                             <i class="fas fa-times-circle"></i>
+
                                             Inactive
 
                                         </span>
@@ -381,36 +460,35 @@
 
                                     <div class="slider-actions">
 
+                                        {{-- Edit --}}
                                         <a
                                             href="{{ route('admin.sliders.edit', $slider->id) }}"
                                             class="btn btn-warning btn-sm mr-2"
                                             title="Edit"
                                         >
-
                                             <i class="fas fa-edit"></i>
-
                                         </a>
 
 
+                                        {{-- Delete --}}
                                         <button
                                             type="button"
                                             class="btn btn-danger btn-sm"
                                             onclick="confirmDelete({{ $slider->id }})"
                                             title="Delete"
                                         >
-
                                             <i class="fas fa-trash"></i>
-
                                         </button>
 
                                     </div>
 
 
+                                    {{-- Delete Form --}}
                                     <form
                                         id="delete-form-{{ $slider->id }}"
                                         action="{{ route('admin.sliders.destroy', $slider->id) }}"
                                         method="POST"
-                                        style="display:none;"
+                                        style="display: none;"
                                     >
 
                                         @csrf
@@ -451,37 +529,59 @@
             </div>
 
 
-            {{-- Footer --}}
-            <div class="card-footer clearfix">
+            {{-- Pagination Footer --}}
+            @if($sliders->hasPages() || $sliders->total() > 0)
 
-                <div class="float-right">
+                <div class="card-footer">
 
-                    {{ $sliders->links() }}
+                    <div class="row align-items-center">
+
+                        {{-- Showing Info --}}
+                        <div class="col-md-6">
+
+                            <small class="text-muted">
+
+                                Showing
+
+                                <strong>
+                                    {{ $sliders->firstItem() ?? 0 }}
+                                </strong>
+
+                                to
+
+                                <strong>
+                                    {{ $sliders->lastItem() ?? 0 }}
+                                </strong>
+
+                                of
+
+                                <strong>
+                                    {{ $sliders->total() }}
+                                </strong>
+
+                                sliders
+
+                            </small>
+
+                        </div>
+
+
+                        {{-- Pagination --}}
+                        <div class="col-md-6">
+
+                            <div class="float-right">
+
+                                {{ $sliders->links() }}
+
+                            </div>
+
+                        </div>
+
+                    </div>
 
                 </div>
 
-                <div class="float-left">
-
-                    <small class="text-muted">
-
-                        Showing
-                        {{ $sliders->firstItem() ?? 0 }}
-
-                        to
-
-                        {{ $sliders->lastItem() ?? 0 }}
-
-                        of
-
-                        {{ $sliders->total() }}
-
-                        sliders
-
-                    </small>
-
-                </div>
-
-            </div>
+            @endif
 
         </div>
 
@@ -492,6 +592,7 @@
 @endsection
 
 
+{{-- CSS --}}
 @push('styles')
 
 <style>
@@ -519,11 +620,26 @@
         min-width: 36px;
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Pagination
+    |--------------------------------------------------------------------------
+    */
+
+    .card-footer .pagination {
+        margin-bottom: 0;
+    }
+
+    .card-footer .page-link {
+        padding: 0.375rem 0.75rem;
+    }
+
 </style>
 
 @endpush
 
 
+{{-- JavaScript --}}
 @push('js')
 
 <script>

@@ -6,10 +6,9 @@
 
 @include('admin.components.alert')
 
+<!-- Content Header -->
 <section class="content-header">
-
     <div class="container-fluid">
-
         <div class="row mb-2">
 
             <div class="col-sm-6">
@@ -17,23 +16,18 @@
             </div>
 
             <div class="col-sm-6">
-
                 <ol class="breadcrumb float-sm-right">
 
                     <li class="breadcrumb-item">
-
                         <a href="{{ route('dashboard') }}">
                             Home
                         </a>
-
                     </li>
 
                     <li class="breadcrumb-item">
-
                         <a href="{{ route('admin.sliders.index') }}">
                             Sliders
                         </a>
-
                     </li>
 
                     <li class="breadcrumb-item active">
@@ -41,38 +35,34 @@
                     </li>
 
                 </ol>
-
             </div>
 
         </div>
-
     </div>
-
 </section>
 
 
+<!-- Main Content -->
 <section class="content">
 
     <div class="container-fluid">
 
         <div class="row">
 
-            <div class="col-md-10">
+            <div class="col-md-12">
 
                 <div class="card card-warning">
 
+                    <!-- Card Header -->
                     <div class="card-header">
-
                         <h3 class="card-title">
-
                             <i class="fas fa-edit"></i>
                             Edit Slider
-
                         </h3>
-
                     </div>
 
 
+                    <!-- Form -->
                     <form
                         action="{{ route('admin.sliders.update', $slider->id) }}"
                         method="POST"
@@ -80,32 +70,47 @@
                     >
 
                         @csrf
-
                         @method('PUT')
-
 
                         <div class="card-body">
 
                             <div class="row">
 
-                                {{-- Title --}}
+                                <!-- Position -->
                                 <div class="col-md-6">
 
                                     <div class="form-group">
 
-                                        <label>
-                                            Title
+                                        <label for="position">
+                                            Position
+                                            <span class="text-danger">*</span>
                                         </label>
 
-                                        <input
-                                            type="text"
-                                            name="title"
-                                            class="form-control @error('title') is-invalid @enderror"
-                                            value="{{ old('title', $slider->title) }}"
-                                            placeholder="Enter slider title"
+                                        <select
+                                            name="position"
+                                            id="position"
+                                            class="form-control @error('position') is-invalid @enderror"
+                                            required
                                         >
 
-                                        @error('title')
+                                            <option value="main_slider"
+                                                {{ old('position', $slider->position) == 'main_slider' ? 'selected' : '' }}>
+                                                Main Slider
+                                            </option>
+
+                                            <option value="side_top"
+                                                {{ old('position', $slider->position) == 'side_top' ? 'selected' : '' }}>
+                                                Side Top
+                                            </option>
+
+                                            <option value="side_bottom"
+                                                {{ old('position', $slider->position) == 'side_bottom' ? 'selected' : '' }}>
+                                                Side Bottom
+                                            </option>
+
+                                        </select>
+
+                                        @error('position')
                                             <span class="invalid-feedback">
                                                 {{ $message }}
                                             </span>
@@ -116,24 +121,29 @@
                                 </div>
 
 
-                                {{-- Subtitle --}}
+                                <!-- Link URL -->
                                 <div class="col-md-6">
 
                                     <div class="form-group">
 
-                                        <label>
-                                            Subtitle
+                                        <label for="link_url">
+                                            Link URL
                                         </label>
 
                                         <input
-                                            type="text"
-                                            name="subtitle"
-                                            class="form-control @error('subtitle') is-invalid @enderror"
-                                            value="{{ old('subtitle', $slider->subtitle) }}"
-                                            placeholder="Enter subtitle"
+                                            type="url"
+                                            name="link_url"
+                                            id="link_url"
+                                            class="form-control @error('link_url') is-invalid @enderror"
+                                            value="{{ old('link_url', $slider->link_url) }}"
+                                            placeholder="https://example.com/product/example"
                                         >
 
-                                        @error('subtitle')
+                                        <small class="text-muted">
+                                            Optional. Add the product or page URL.
+                                        </small>
+
+                                        @error('link_url')
                                             <span class="invalid-feedback">
                                                 {{ $message }}
                                             </span>
@@ -144,34 +154,7 @@
                                 </div>
 
 
-                                {{-- Description --}}
-                                <div class="col-md-12">
-
-                                    <div class="form-group">
-
-                                        <label>
-                                            Description
-                                        </label>
-
-                                        <textarea
-                                            name="description"
-                                            rows="4"
-                                            class="form-control @error('description') is-invalid @enderror"
-                                            placeholder="Enter slider description"
-                                        >{{ old('description', $slider->description) }}</textarea>
-
-                                        @error('description')
-                                            <span class="invalid-feedback">
-                                                {{ $message }}
-                                            </span>
-                                        @enderror
-
-                                    </div>
-
-                                </div>
-
-
-                                {{-- Current Image --}}
+                                <!-- Current Image -->
                                 <div class="col-md-4">
 
                                     <div class="form-group">
@@ -180,14 +163,24 @@
                                             Current Image
                                         </label>
 
-                                        <div>
+                                        <div class="mt-2">
 
-                                            <img
-                                                src="{{ asset('storage/' . $slider->image) }}"
-                                                alt="{{ $slider->title }}"
-                                                class="current-slider-image"
-                                                width="120"
-                                            >
+                                            @if($slider->image)
+
+                                                <img
+                                                    src="{{ asset('storage/' . $slider->image) }}"
+                                                    alt="Slider Image"
+                                                    class="current-slider-image"
+                                                    width="120"
+                                                >
+
+                                            @else
+
+                                                <div class="alert alert-secondary">
+                                                    No image available.
+                                                </div>
+
+                                            @endif
 
                                         </div>
 
@@ -196,30 +189,30 @@
                                 </div>
 
 
-                                {{-- New Image --}}
+                                <!-- Change Image -->
                                 <div class="col-md-8">
 
                                     <div class="form-group">
 
-                                        <label>
+                                        <label for="image">
                                             Change Image
                                         </label>
 
                                         <input
                                             type="file"
                                             name="image"
+                                            id="image"
                                             class="form-control-file @error('image') is-invalid @enderror"
                                             accept="image/jpeg,image/png,image/webp"
                                         >
 
-                                        <small class="text-muted">
-                                            Leave empty to keep current image.
+                                        <small class="text-muted d-block mt-1">
+                                            Leave empty to keep the current image.
                                             JPG, JPEG, PNG or WEBP. Maximum 2MB.
                                         </small>
 
                                         @error('image')
-                                            <br>
-                                            <span class="text-danger">
+                                            <span class="text-danger d-block mt-1">
                                                 {{ $message }}
                                             </span>
                                         @enderror
@@ -229,22 +222,27 @@
                                 </div>
 
 
-                                {{-- Sort --}}
+                                <!-- Sort Order -->
                                 <div class="col-md-4">
 
                                     <div class="form-group">
 
-                                        <label>
+                                        <label for="sort_order">
                                             Sort Order
                                         </label>
 
                                         <input
                                             type="number"
                                             name="sort_order"
+                                            id="sort_order"
                                             class="form-control @error('sort_order') is-invalid @enderror"
                                             value="{{ old('sort_order', $slider->sort_order) }}"
                                             min="0"
                                         >
+
+                                        <small class="text-muted">
+                                            Lower number will appear first.
+                                        </small>
 
                                         @error('sort_order')
                                             <span class="invalid-feedback">
@@ -257,77 +255,26 @@
                                 </div>
 
 
-                                {{-- Button Text --}}
+                                <!-- Start At -->
                                 <div class="col-md-4">
 
                                     <div class="form-group">
 
-                                        <label>
-                                            Button Text
-                                        </label>
-
-                                        <input
-                                            type="text"
-                                            name="button_text"
-                                            class="form-control @error('button_text') is-invalid @enderror"
-                                            value="{{ old('button_text', $slider->button_text) }}"
-                                            placeholder="Example: Learn More"
-                                        >
-
-                                        @error('button_text')
-                                            <span class="invalid-feedback">
-                                                {{ $message }}
-                                            </span>
-                                        @enderror
-
-                                    </div>
-
-                                </div>
-
-
-                                {{-- Button URL --}}
-                                <div class="col-md-4">
-
-                                    <div class="form-group">
-
-                                        <label>
-                                            Button URL
-                                        </label>
-
-                                        <input
-                                            type="text"
-                                            name="button_url"
-                                            class="form-control @error('button_url') is-invalid @enderror"
-                                            value="{{ old('button_url', $slider->button_url) }}"
-                                            placeholder="https://example.com"
-                                        >
-
-                                        @error('button_url')
-                                            <span class="invalid-feedback">
-                                                {{ $message }}
-                                            </span>
-                                        @enderror
-
-                                    </div>
-
-                                </div>
-
-
-                                {{-- Start --}}
-                                <div class="col-md-6">
-
-                                    <div class="form-group">
-
-                                        <label>
+                                        <label for="start_at">
                                             Start At
                                         </label>
 
                                         <input
                                             type="datetime-local"
                                             name="start_at"
+                                            id="start_at"
                                             class="form-control @error('start_at') is-invalid @enderror"
                                             value="{{ old('start_at', $slider->start_at?->format('Y-m-d\TH:i')) }}"
                                         >
+
+                                        <small class="text-muted">
+                                            Optional.
+                                        </small>
 
                                         @error('start_at')
                                             <span class="invalid-feedback">
@@ -340,21 +287,26 @@
                                 </div>
 
 
-                                {{-- End --}}
-                                <div class="col-md-6">
+                                <!-- End At -->
+                                <div class="col-md-4">
 
                                     <div class="form-group">
 
-                                        <label>
+                                        <label for="end_at">
                                             End At
                                         </label>
 
                                         <input
                                             type="datetime-local"
                                             name="end_at"
+                                            id="end_at"
                                             class="form-control @error('end_at') is-invalid @enderror"
                                             value="{{ old('end_at', $slider->end_at?->format('Y-m-d\TH:i')) }}"
                                         >
+
+                                        <small class="text-muted">
+                                            Optional.
+                                        </small>
 
                                         @error('end_at')
                                             <span class="invalid-feedback">
@@ -367,8 +319,8 @@
                                 </div>
 
 
-                                {{-- Status --}}
-                                <div class="col-md-12">
+                                <!-- Status -->
+                                <div class="col-md-12 mt-2">
 
                                     <div class="form-group">
 
@@ -401,26 +353,23 @@
                         </div>
 
 
+                        <!-- Card Footer -->
                         <div class="card-footer">
 
                             <a
                                 href="{{ route('admin.sliders.index') }}"
                                 class="btn btn-secondary"
                             >
-
                                 <i class="fas fa-arrow-left"></i>
                                 Back
-
                             </a>
 
                             <button
                                 type="submit"
-                                class="btn btn-warning"
+                                class="btn btn-warning float-right"
                             >
-
                                 <i class="fas fa-save"></i>
                                 Update Slider
-
                             </button>
 
                         </div>
@@ -443,7 +392,6 @@
 @push('styles')
 
 <style>
-
     .current-slider-image {
         width: 220px;
         height: 120px;
@@ -451,7 +399,7 @@
         border-radius: 6px;
         border: 1px solid #ddd;
     }
-
 </style>
 
 @endpush
+

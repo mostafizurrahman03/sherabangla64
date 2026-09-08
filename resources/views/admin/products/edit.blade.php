@@ -188,6 +188,29 @@
 
 
                                 {{-- Full Description --}}
+                                <!-- <div class="form-group">
+
+                                    <label for="full_desc">
+                                        Full Description
+                                    </label>
+
+                                    <textarea
+                                        name="full_desc"
+                                        id="full_desc"
+                                        rows="7"
+                                        class="form-control @error('full_desc') is-invalid @enderror"
+                                        placeholder="Detailed product specification"
+                                    >{{ old('full_desc', $product->full_desc) }}</textarea>
+
+                                    @error('full_desc')
+                                        <span class="invalid-feedback">
+                                            {{ $message }}
+                                        </span>
+                                    @enderror
+
+                                </div> -->
+
+                                {{-- Full Description with Summernote --}}
                                 <div class="form-group">
 
                                     <label for="full_desc">
@@ -608,7 +631,7 @@
                                             src="{{ asset('storage/' . $product->image) }}"
                                             alt="{{ $product->name }}"
                                             class="product-current-image"
-                                            width="70"
+                                            width="120"
                                         >
 
                                     </div>
@@ -900,6 +923,60 @@
 
     });
 
+</script>
+
+@endpush
+
+@push('js')
+
+{{-- Summernote JS --}}
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+
+        // 1. SUMMERNOTE INITIALIZATION
+        $('#full_desc').summernote({
+            height: 300,
+            placeholder: 'Detailed product specification...',
+            toolbar: [
+                ['style', ['style']],
+                ['font', ['bold', 'italic', 'underline', 'clear']],
+                ['fontname', ['fontname']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['table', ['table']],
+                ['insert', ['link', 'picture', 'video']],
+                ['view', ['fullscreen', 'codeview', 'help']]
+            ],
+            callbacks: {
+                onImageUpload: function(files) {
+                    console.log('Image upload triggered', files);
+                }
+            }
+        });
+
+        // 2. AUTO GENERATE SLUG
+        $('#name').on('keyup', function() {
+            var slug = $(this).val()
+                .toLowerCase()
+                .replace(/[^a-z0-9-]/g, '-')
+                .replace(/-+/g, '-')
+                .replace(/^-|-$/g, '');
+            
+            $('#slug').val(slug);
+        });
+
+        // 3. FILE INPUT - SHOW SELECTED FILENAME
+        $('#image').on('change', function (event) {
+            const fileName = event.target.files[0]?.name;
+            if (fileName) {
+                const label = $(this).next('.custom-file-label');
+                label.text(fileName);
+            }
+        });
+
+    });
 </script>
 
 @endpush

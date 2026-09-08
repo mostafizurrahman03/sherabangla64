@@ -13,7 +13,12 @@ use App\Http\Controllers\Admin\{
     BrandController,
     ProductController,
     SettingController,
-    HeaderController
+    CouponController,
+    CustomerController,
+    HeaderController,
+    DistrictController,
+    ThanaController,
+    OrderController
 };
 
 /*
@@ -30,7 +35,7 @@ Route::get('good', function () {
 | Admin Routes
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth']) // প্রয়োজনে আপনার পছন্দমত মিডলওয়্যার যোগ করতে পারেন
+Route::middleware(['auth']) 
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
@@ -44,7 +49,7 @@ Route::middleware(['auth']) // প্রয়োজনে আপনার পছ�
         Route::resource('menus', MenuController::class);
         Route::resource('sliders', SliderController::class);
         Route::resource('policies', PolicyController::class);
-        Route::resource('headers', HeaderController::class);
+        // Route::resource('headers', HeaderController::class);
 
         /* Product Management */
         Route::resource('categories', CategoryController::class);
@@ -53,7 +58,7 @@ Route::middleware(['auth']) // প্রয়োজনে আপনার পছ�
         Route::resource('products', ProductController::class);
 
 
-         Route::put('settings/update-all', [SettingController::class, 'updateAll'])
+        Route::put('settings/update-all', [SettingController::class, 'updateAll'])
             ->name('settings.update-all');
 
         // General Settings
@@ -70,8 +75,62 @@ Route::middleware(['auth']) // প্রয়োজনে আপনার পছ�
 
         // Integration Settings
         Route::get('settings/integration', [SettingController::class, 'integration'])
-            ->name('settings.integration');    
+            ->name('settings.integration');
 
         Route::resource('settings', SettingController::class);
+
+        Route::resource('coupons', CouponController::class);
+
+        
+        // Add this route for AJAX thana loading
+        Route::get('/customers/get-thanas', [CustomerController::class, 'getThanas'])
+            ->name('customers.get-thanas');
+
+
+        // Toggle Status Route
+        Route::post('customers/{id}/toggle-status', [CustomerController::class, 'toggleStatus'])
+            ->name('customers.toggle-status');
+
+        // Toggle Verification Route
+        Route::post('customers/{id}/toggle-verification', [CustomerController::class, 'toggleVerification'])
+            ->name('customers.toggle-verification');
+
+        Route::resource('customers', CustomerController::class);
+
+           
+
+        // District Routes
+
+        Route::post('districts/{id}/toggle-status', [DistrictController::class, 'toggleStatus'])
+            ->name('districts.toggle-status');
+        Route::get('districts/get-districts', [DistrictController::class, 'getDistricts'])
+            ->name('districts.get-districts');
+
+        Route::resource('districts', DistrictController::class);
+
+        // Thana Routes
+    
+        Route::post('thanas/{id}/toggle-status', [ThanaController::class, 'toggleStatus'])
+            ->name('thanas.toggle-status');
+        Route::get('thanas/get-by-district', [ThanaController::class, 'getThanasByDistrict'])
+            ->name('thanas.get-by-district');
+
+        Route::resource('thanas', ThanaController::class);
+
+
+        // Orders
+        Route::resource('orders', OrderController::class);
+
+        Route::post('orders/{id}/status', [OrderController::class, 'updateStatus'])
+            ->name('orders.update-status');
+
+        Route::post('orders/{id}/cancel', [OrderController::class, 'cancel'])
+            ->name('orders.cancel');
+
+        Route::get('orders/{id}/print', [OrderController::class, 'print'])
+            ->name('orders.print');
+
+        
+        
 
     });

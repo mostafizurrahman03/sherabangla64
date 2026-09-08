@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Admin | @yield('title','Dashboard')</title>
+  <title>Admin | @yield('title', 'Dashboard')</title>
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet"
@@ -38,24 +38,26 @@
   <!-- Select2 -->
   <link rel="stylesheet" href="{{ asset('admin') }}/plugins/select2/css/select2.min.css">
 
-   <!-- Dynamic Favicon -->
-    <link rel="icon" href="{{ $favicon }}" type="image/x-icon">
-    <link rel="shortcut icon" href="{{ $favicon }}" type="image/x-icon">
-    
-    <!-- For better compatibility -->
-    <link rel="apple-touch-icon" href="{{ $favicon }}">
-    <link rel="apple-touch-icon-precomposed" href="{{ $favicon }}">
+  <!-- Dynamic Favicon -->
+  <link rel="icon" href="{{ $favicon }}" type="image/x-icon">
+  <link rel="shortcut icon" href="{{ $favicon }}" type="image/x-icon">
+
+  <!-- For better compatibility -->
+  <link rel="apple-touch-icon" href="{{ $favicon }}">
+  <link rel="apple-touch-icon-precomposed" href="{{ $favicon }}">
 
   @stack('css')
 
   <!-- Custom Modern Touch for AdminLTE Sidebar -->
   <style>
     .sidebar-dark-navy {
-      background-color: #0f172a !important; /* Slate / Dark Blue */
+      background-color: #0f172a !important;
+      /* Slate / Dark Blue */
     }
 
-    .sidebar-dark-navy .nav-sidebar > .nav-item > .nav-link.active {
-      background-color: #2563eb !important; /* Modern Royal Blue */
+    .sidebar-dark-navy .nav-sidebar>.nav-item>.nav-link.active {
+      background-color: #2563eb !important;
+      /* Modern Royal Blue */
       color: #ffffff !important;
       box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
       border-radius: 6px;
@@ -71,7 +73,7 @@
       background-color: rgba(255, 255, 255, 0.08) !important;
     }
   </style>
-  
+
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       const body = document.body;
@@ -339,8 +341,8 @@
     <!-- /.content-wrapper -->
     <footer class="main-footer">
       <strong>
-          Copyright &copy; <?php echo date('Y'); ?> 
-          <a href="https://techgiantpro.com/" target="_blank">{{ $appName }}</a>
+        Copyright &copy; <?php echo date('Y'); ?>
+        <a href="https://sherabangla64.com/" target="_blank">{{ $appName }}</a>
       </strong>
       {{ $copyrightText }}
     </footer>
@@ -407,137 +409,137 @@
   <script src="{{ asset('admin') }}/plugins/select2/js/select2.full.min.js"></script>
 
   <script>
-    $(function() {
-          $("#example1").DataTable({
-              "responsive": true,
-              "lengthChange": true, // Enable dropdown for selecting number of rows
-              "autoWidth": false,
-              "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
-              "lengthMenu": [25, 50, 100, 500], // Options for number of rows per page
-              "pageLength": 25, // Default number of rows per page
-          }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-  
-          $('#example2').DataTable({
-              "paging": true,
-              "lengthChange": true, // Enable length menu
-              "lengthMenu": [25, 50, 100, 500], // Options for number of rows per page
-              "pageLength": 25, // Default number of rows per page
-              "searching": false,
-              "ordering": true,
-              "info": true,
-              "autoWidth": false,
-              "responsive": true,
-          });
+    $(function () {
+      $("#example1").DataTable({
+        "responsive": true,
+        "lengthChange": true, // Enable dropdown for selecting number of rows
+        "autoWidth": false,
+        "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
+        "lengthMenu": [25, 50, 100, 500], // Options for number of rows per page
+        "pageLength": 25, // Default number of rows per page
+      }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+
+      $('#example2').DataTable({
+        "paging": true,
+        "lengthChange": true, // Enable length menu
+        "lengthMenu": [25, 50, 100, 500], // Options for number of rows per page
+        "pageLength": 25, // Default number of rows per page
+        "searching": false,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false,
+        "responsive": true,
       });
+    });
   </script>
 
   <script>
     function showToast(type, message) {
-              const Toast = Swal.mixin({
-                  toast: true,
-                  position: 'top-end',
-                  showConfirmButton: false,
-                  timer: 5000
-              });
-  
-              Toast.fire({
-                  icon: type,
-                  title: message
-              });
-          }
+      const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 5000
+      });
+
+      Toast.fire({
+        icon: type,
+        title: message
+      });
+    }
   </script>
   <script>
-    $(function() {
-              //Initialize Select2 Elements
-              $('.select2').select2()
-  
-              //Initialize Select2 Elements
-              $('.select2bs4').select2({
-                  theme: 'bootstrap4'
-              })
-  
-              //Datemask dd/mm/yyyy
-              $('#datemask').inputmask('dd/mm/yyyy', {
-                  'placeholder': 'dd/mm/yyyy'
-              })
-              //Datemask2 mm/dd/yyyy
-              $('#datemask2').inputmask('mm/dd/yyyy', {
-                  'placeholder': 'mm/dd/yyyy'
-              })
-              //Money Euro
-              $('[data-mask]').inputmask()
-  
-              //Date picker
-              $('#reservationdate').datetimepicker({
-                  format: 'L'
-              });
-  
-              //Date and time picker
-              $('#reservationdatetime').datetimepicker({
-                  icons: {
-                      time: 'far fa-clock'
-                  }
-              });
-  
-              //Date range picker
-              $('#reservation').daterangepicker()
-              //Date range picker with time picker
-              $('#reservationtime').daterangepicker({
-                  timePicker: true,
-                  timePickerIncrement: 30,
-                  locale: {
-                      format: 'MM/DD/YYYY hh:mm A'
-                  }
-              })
-              //Date range as a button
-              $('#daterange-btn').daterangepicker({
-                      ranges: {
-                          'Today': [moment(), moment()],
-                          'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                          'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-                          'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-                          'This Month': [moment().startOf('month'), moment().endOf('month')],
-                          'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1,
-                              'month').endOf('month')]
-                      },
-                      startDate: moment().subtract(29, 'days'),
-                      endDate: moment()
-                  },
-                  function(start, end) {
-                      $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format(
-                          'MMMM D, YYYY'))
-                  }
-              )
-  
-              //Timepicker
-              $('#timepicker').datetimepicker({
-                  format: 'LT'
-              })
-  
-  
-          })
+    $(function () {
+      //Initialize Select2 Elements
+      $('.select2').select2()
+
+      //Initialize Select2 Elements
+      $('.select2bs4').select2({
+        theme: 'bootstrap4'
+      })
+
+      //Datemask dd/mm/yyyy
+      $('#datemask').inputmask('dd/mm/yyyy', {
+        'placeholder': 'dd/mm/yyyy'
+      })
+      //Datemask2 mm/dd/yyyy
+      $('#datemask2').inputmask('mm/dd/yyyy', {
+        'placeholder': 'mm/dd/yyyy'
+      })
+      //Money Euro
+      $('[data-mask]').inputmask()
+
+      //Date picker
+      $('#reservationdate').datetimepicker({
+        format: 'L'
+      });
+
+      //Date and time picker
+      $('#reservationdatetime').datetimepicker({
+        icons: {
+          time: 'far fa-clock'
+        }
+      });
+
+      //Date range picker
+      $('#reservation').daterangepicker()
+      //Date range picker with time picker
+      $('#reservationtime').daterangepicker({
+        timePicker: true,
+        timePickerIncrement: 30,
+        locale: {
+          format: 'MM/DD/YYYY hh:mm A'
+        }
+      })
+      //Date range as a button
+      $('#daterange-btn').daterangepicker({
+        ranges: {
+          'Today': [moment(), moment()],
+          'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+          'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+          'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+          'This Month': [moment().startOf('month'), moment().endOf('month')],
+          'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1,
+            'month').endOf('month')]
+        },
+        startDate: moment().subtract(29, 'days'),
+        endDate: moment()
+      },
+        function (start, end) {
+          $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format(
+            'MMMM D, YYYY'))
+        }
+      )
+
+      //Timepicker
+      $('#timepicker').datetimepicker({
+        format: 'LT'
+      })
+
+
+    })
   </script>
 
   <script>
     function confirmDelete(event, userId) {
-            event.preventDefault();
+      event.preventDefault();
 
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
-                if (result.value) {
-                    $("#delete-form-" + userId).submit();
-                } else if (result.dismiss === Swal.DismissReason.cancel) {
-                    console.log('User cancelled deletion');
-                }
-            });
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!'
+      }).then((result) => {
+        if (result.value) {
+          $("#delete-form-" + userId).submit();
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+          console.log('User cancelled deletion');
         }
+      });
+    }
   </script>
 
   @stack('js')

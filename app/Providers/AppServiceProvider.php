@@ -23,31 +23,81 @@ class AppServiceProvider extends ServiceProvider
 
             $view->with([
                 'settings' => $settings,
-                'logo' => isset($settings['logo']) && $settings['logo']->value 
-                    ? asset('storage/' . $settings['logo']->value) 
+                'logo' => isset($settings['logo']) && $settings['logo']->value
+                    ? asset('storage/' . $settings['logo']->value)
                     : asset('admin/dist/img/logo31.png'),
-                'appName' => isset($settings['app_name']) 
-                    ? $settings['app_name']->value 
+                'appName' => isset($settings['app_name'])
+                    ? $settings['app_name']->value
                     : 'Sherabangla64',
-                'favicon' => isset($settings['favicon']) && $settings['favicon']->value 
-                    ? asset('storage/' . $settings['favicon']->value) 
+                'favicon' => isset($settings['favicon']) && $settings['favicon']->value
+                    ? asset('storage/' . $settings['favicon']->value)
                     : asset('admin/dist/img/favicon.ico'),
-                'copyrightText' => isset($settings['copyright_text']) 
-                    ? $settings['copyright_text']->value 
+                'copyrightText' => isset($settings['copyright_text'])
+                    ? $settings['copyright_text']->value
                     : 'All rights reserved.',
             ]);
         });
 
-        // Share cart and categories with layouts.app
-        View::composer('layouts.app', function ($view) {
-            $cart = app(CartController::class)->currentCartPublic();
+        // View::composer('layouts.app', function ($view) {
+        //     $cart = app(CartController::class)->currentCartPublic();
 
-            $view->with([
-                'globalCategories' => Category::where('is_active', true)
-                    ->orderBy('sort_order')
-                    ->get(),
-                'globalCartCount' => $cart->total_quantity,
-            ]);
+        //     if ($cart) {
+        //         $cart->load('items.product');
+        //     }
+
+        //     // Safely calculate total price and items count to avoid errors if cart is null
+        //     $cartTotalPrice = 0;
+        //     $globalCartCount = 0;
+
+        //     if ($cart && $cart->items) {
+        //         $cartTotalPrice = $cart->items->sum(function ($item) {
+        //             // Fallback to product current_price if unit_price is missing
+        //             $price = $item->unit_price ?? ($item->product->current_price ?? 0);
+        //             return $item->quantity * $price;
+        //         });
+
+        //         $globalCartCount = $cart->items->sum('quantity');
+        //     }
+
+        //     $view->with([
+        //         'globalCategories' => Category::where('is_active', true)
+        //             ->orderBy('sort_order')
+        //             ->get(),
+
+        //         'globalCartCount' => $globalCartCount,
+
+        //         'globalCartTotal' => $cartTotalPrice,
+
+        //         // Global cart
+        //         'cart' => $cart,
+        //     ]);
+        // });
+
+        // গ্লোবাল ভিউ ভেরিয়েবল
+        View::composer('*', function ($view) {
+            $globalCategories = Category::where('is_active', true)
+                ->orderBy('sort_order', 'asc')
+                ->get();
+
+            try {
+                $cartController = app(CartController::class);
+                $cart = $cartController->currentCartPublic();
+                $globalCartCount = $cart->items->sum('quantity');
+                $globalCartTotal = $cart->items->sum(function ($item) {
+                    return $item->unit_price * $item->quantity;
+                });
+            } catch (\Exception $e) {
+                $cart = null;
+                $globalCartCount = 0;
+                $globalCartTotal = 0;
+            }
+
+            $view->with(compact(
+                'globalCategories',
+                'cart',
+                'globalCartCount',
+                'globalCartTotal'
+            ));
         });
     }
 }
